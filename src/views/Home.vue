@@ -5,10 +5,12 @@ import GraphicEditorRender from '@/components/GraphicEditorRender/index.vue'
 import ToolsLayer from '@/components/ToolsLayer/index.vue'
 import Editor, {
   AddBaseTypePlugin,
+  AlignGuidLinePlugin,
   CenterAlignPlugin,
-  WorkspacePlugin,
-  RulerPlugin,
+  ControlsPlugin,
   HistoryPlugin,
+  RulerPlugin,
+  WorkspacePlugin,
 } from '@/lib/core'
 import { useEditorStore } from '@/stores/modules/editor'
 
@@ -33,6 +35,8 @@ onMounted(() => {
   canvasEditor.use(WorkspacePlugin)
   canvasEditor.use(RulerPlugin)
   canvasEditor.use(HistoryPlugin)
+  canvasEditor.use(ControlsPlugin)
+  canvasEditor.use(AlignGuidLinePlugin)
 
   editorStore.setEditor(canvasEditor)
   editorStore.setCanvas(canvas)

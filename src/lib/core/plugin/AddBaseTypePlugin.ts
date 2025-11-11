@@ -42,7 +42,6 @@ export default class AddBaseTypePlugin implements IPluginTempl {
     scale && this._toScale(item)
     event && this._toEvent(item, event)
 
-    console.debug('[DEBUG__plugin/AddBaseTypePlugin.ts-this.canvas]', this.canvas)
     this.canvas.add(item)
     if (!event && center) {
       this._toCenter(item)

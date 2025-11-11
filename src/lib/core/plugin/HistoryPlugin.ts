@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
  * @Author: 秦少卫
  * @Date: 2023-06-20 13:06:31
@@ -13,7 +12,6 @@ import type { IEditor, IPluginTempl } from '@/lib/core'
 type IPlugin = Pick<HistoryPlugin, 'undo' | 'redo' | 'historyUpdate'>
 
 declare module '@/lib/core' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface IEditor extends IPlugin {}
 }
 
@@ -28,13 +26,7 @@ type extendCanvas = {
 
 class HistoryPlugin implements IPluginTempl {
   static pluginName = 'HistoryPlugin'
-  static apis = [
-    'undo',
-    'redo',
-    'historyUpdate',
-    'clearAndSaveState',
-    'saveState'
-  ]
+  static apis = ['undo', 'redo', 'historyUpdate', 'clearAndSaveState', 'saveState']
   static events = []
   // 历史记录相关属性Add commentMore actions
   private stack: string[] = []
@@ -45,7 +37,7 @@ class HistoryPlugin implements IPluginTempl {
   hotkeys: string[] = ['ctrl+z', 'ctrl+shift+z', '⌘+z', '⌘+shift+z']
   constructor(
     public canvas: fabric.Canvas & extendCanvas,
-    public editor: IEditor
+    public editor: IEditor,
   ) {
     fabric.Canvas.prototype._historyNext = () => {
       return this.editor.getJson()
@@ -58,7 +50,7 @@ class HistoryPlugin implements IPluginTempl {
     const events = {
       'object:removed': () => this.saveState(),
       'object:modified': () => this.saveState(),
-      'object:skewing': () => this.saveState()
+      'object:skewing': () => this.saveState(),
     }
 
     // 绑定事件
@@ -110,9 +102,7 @@ class HistoryPlugin implements IPluginTempl {
 
     // 处理 workspace 的特殊情况
     const parsedState = JSON.parse(state)
-    const workspace = parsedState.objects?.find(
-      (item: any) => item.id === 'workspace'
-    )
+    const workspace = parsedState.objects?.find((item: any) => item.id === 'workspace')
     if (workspace) {
       workspace.evented = false
     }
@@ -130,7 +120,7 @@ class HistoryPlugin implements IPluginTempl {
   private getState() {
     return {
       undoCount: this.currentIndex - 1,
-      redoCount: this.stack.length - this.currentIndex
+      redoCount: this.stack.length - this.currentIndex,
     }
   }
 

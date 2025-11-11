@@ -20,7 +20,7 @@ const saveWith = debounce(function (type) {
   <div>
     <el-dropdown placement="bottom-end" @command="saveWith">
       <el-button type="primary">
-        <el-icon class="el-icon--right"><Download /></el-icon><span class="ml-2"></span>
+        <Download :size="16" />
       </el-button>
       <template #dropdown>
         <el-dropdown-menu>
