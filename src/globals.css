@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+html,
+body {
+  background-attachment: fixed;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior-x: none;
+  padding: 0;
+  width: 100vw;
+}
+
+#app {
+  background-color: #eff3f5;
+  height: 100vh;
+  position: fixed;
+  width: 100vw;
+}
