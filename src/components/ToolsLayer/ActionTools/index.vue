@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, unref, onDeactivated } from 'vue'
+import { debounce } from 'lodash-es'
 import {
   Plus,
   Type,
@@ -13,7 +14,12 @@ import {
 } from 'lucide-vue-next'
 import { fabric } from 'fabric'
 import { useEditorStore } from '@/stores/modules/editor'
+import { texts, shapes, DrawTypes } from '@/enums/editor'
+import { getPolygonVertices } from '@/utils/math'
 
+// 绘制元素相关
+const curDrawType = ref<DrawTypes | ''>('')
+const isDrawingLineMode = ref(false)
 const defaultPosition = { shadow: '', fontFamily: 'arial' }
 const editorStore = useEditorStore()
 const colorList = ref([
@@ -44,44 +50,111 @@ const colorList = ref([
 ])
 const color = ref('rgba(255, 255, 255, 1)')
 
-const handleAddShape = (command: string) => {
-  if (!editorStore.editor) return
-
-  let object: fabric.Object
-
-  switch (command) {
-    case 'text':
-      object = new fabric.Textbox('双击编辑文字', {
+const handleAddText = debounce(function (type: texts) {
+  let text: fabric.IText | null
+  switch (type) {
+    case texts.h1:
+      text = new fabric.Textbox('双击编辑标题', {
         ...defaultPosition,
-        width: 200,
-        fontSize: 24,
+        fontWeight: 'bold',
+        fontSize: 80,
         fill: '#000000',
       })
       break
-    case 'shape':
-      object = new fabric.Rect({
+    case texts.h2:
+      text = new fabric.Textbox('双击编辑标题', {
+        ...defaultPosition,
+        fontWeight: 'bold',
+        fontSize: 60,
+        fill: '#000000',
+      })
+      break
+    case texts.normal:
+      text = new fabric.Textbox('双击编辑标题', {
+        ...defaultPosition,
+        fontSize: 48,
+        fill: '#000000',
+      })
+      break
+    default:
+      break
+  }
+  text! && editorStore.editor.addBaseType(text, { center: true })
+}, 250)
+
+const handleAddShape = debounce(function (type: shapes) {
+  switch (type) {
+    case shapes.react:
+      const rect = new fabric.Rect({
         ...defaultPosition,
         fill: '#F57274FF',
         width: 400,
         height: 400,
         name: '矩形',
       })
+      editorStore.editor.addBaseType(rect, { center: true })
       break
-    case 'image':
-      // 创建图片占位符或触发图片上传
-      object = new fabric.Rect({
+    case shapes.triangle:
+      const triangle = new fabric.Triangle({
         ...defaultPosition,
-        fill: '#E0E0E0',
         width: 400,
-        height: 300,
-        name: '图片占位符',
+        height: 400,
+        fill: '#92706BFF',
+        name: '三角形',
       })
+      editorStore.editor.addBaseType(triangle, { center: true })
+      break
+    case shapes.around:
+      const circle = new fabric.Circle({
+        ...defaultPosition,
+        radius: 150,
+        fill: '#57606BFF',
+        // id: uuid(),
+        name: '圆形',
+      })
+      editorStore.editor.addBaseType(circle, { center: true })
+      break
+    case shapes.polygon:
+      const polygon = new fabric.Polygon(getPolygonVertices(5, 200), {
+        ...defaultPosition,
+        fill: '#CCCCCCFF',
+        name: '多边形',
+      })
+      polygon.set({
+        // 创建完设置宽高，不然宽高会变成自动的值
+        width: 400,
+        height: 400,
+        // 关闭偏移
+        pathOffset: {
+          x: 0,
+          y: 0,
+        },
+      })
+      editorStore.editor.addBaseType(polygon, { center: true })
+      break
+    case shapes.line:
+      const line = new fabric.Line([100, 100, 10, 10], {
+        ...defaultPosition,
+        stroke: '#333',
+        fill: '#333',
+        name: '直线',
+      })
+      editorStore.editor.addBaseType(line, { center: true })
       break
     default:
-      return
+      break
   }
+}, 250)
 
-  editorStore.editor.addBaseType(object, { center: true })
+const handleAddType = (type: string) => {
+  switch (type) {
+    case 'text':
+      handleAddText(texts.h1)
+      break
+    case 'shape':
+      handleAddShape(shapes.react)
+      break
+  }
 }
 
 function setColor(_color: string) {
@@ -95,12 +168,29 @@ function setColor(_color: string) {
   color.value = _color
 }
 
-onMounted(() => {})
+function endConflictTools() {
+  editorStore.editor.discardPolygon()
+  editorStore.editor.endDraw()
+  editorStore.editor.endTextPathDraw()
+}
+
+// 退出绘制状态
+const cancelDraw = () => {
+  if (!unref(isDrawingLineMode)) return
+  isDrawingLineMode.value = false
+  curDrawType.value = ''
+  editorStore.editor.setMode(false)
+  endConflictTools()
+}
+
+onDeactivated(() => {
+  cancelDraw()
+})
 </script>
 
 <template>
   <div class="flex justify-center gap-2">
-    <el-dropdown placement="bottom-end" @command="handleAddShape">
+    <el-dropdown placement="bottom-end" @command="handleAddType">
       <el-button>
         <el-icon><Plus /></el-icon>
       </el-button>
@@ -135,7 +225,7 @@ onMounted(() => {})
         </main>
       </el-popover>
 
-      <el-dropdown placement="bottom-start" @command="handleAddShape">
+      <el-dropdown placement="bottom-start" @command="handleAddText">
         <el-button>
           <Proportions :size="16" />
         </el-button>
