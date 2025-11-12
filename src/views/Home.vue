@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, provide } from 'vue'
 import { fabric } from 'fabric'
 import GraphicEditorRender from '@/components/GraphicEditorRender/index.vue'
 import ToolsLayer from '@/components/ToolsLayer/index.vue'
@@ -11,6 +11,7 @@ import Editor, {
   HistoryPlugin,
   RulerPlugin,
   WorkspacePlugin,
+  LayerPlugin,
 } from '@/lib/core'
 import { useEditorStore } from '@/stores/modules/editor'
 
@@ -37,12 +38,16 @@ onMounted(() => {
   canvasEditor.use(HistoryPlugin)
   canvasEditor.use(ControlsPlugin)
   canvasEditor.use(AlignGuidLinePlugin)
+  canvasEditor.use(LayerPlugin)
 
   editorStore.setEditor(canvasEditor)
   editorStore.setCanvas(canvas)
 })
 
 onUnmounted(() => canvasEditor.destroy())
+
+provide('fabric', fabric)
+provide('canvasEditor', canvasEditor)
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   Plus,
   Type,
@@ -16,6 +16,33 @@ import { useEditorStore } from '@/stores/modules/editor'
 
 const defaultPosition = { shadow: '', fontFamily: 'arial' }
 const editorStore = useEditorStore()
+const colorList = ref([
+  '#5F2B63',
+  '#B23554',
+  '#F27E56',
+  '#FCE766',
+  '#86DCCD',
+  '#E7FDCB',
+  '#FFDC84',
+  '#F57677',
+  '#5FC2C7',
+  '#98DFE5',
+  '#C2EFF3',
+  '#DDFDFD',
+  '#9EE9D3',
+  '#2FC6C8',
+  '#2D7A9D',
+  '#48466d',
+  '#61c0bf',
+  '#bbded6',
+  '#fae3d9',
+  '#ffb6b9',
+  '#ffaaa5',
+  '#ffd3b6',
+  '#dcedc1',
+  '#a8e6cf',
+])
+const color = ref('rgba(255, 255, 255, 1)')
 
 const handleAddShape = (command: string) => {
   if (!editorStore.editor) return
@@ -57,6 +84,17 @@ const handleAddShape = (command: string) => {
   editorStore.editor.addBaseType(object, { center: true })
 }
 
+function setColor(_color: string) {
+  if (!_color) return
+
+  editorStore.canvas?.setBackgroundColor(
+    _color,
+    editorStore.canvas.renderAll.bind(editorStore.canvas),
+  )
+
+  color.value = _color
+}
+
 onMounted(() => {})
 </script>
 
@@ -78,39 +116,44 @@ onMounted(() => {})
       </template>
     </el-dropdown>
 
-    <el-dropdown placement="bottom-end" @command="handleAddShape">
-      <el-button>
-        <SquareDashed :size="16" />
-      </el-button>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item command="shape">
-            <Shapes :size="16" class="mr-2" />形状
-          </el-dropdown-item>
-          <el-dropdown-item command="image">
-            <Image :size="16" class="mr-2" />图片
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
-    <el-dropdown placement="bottom-start" @command="handleAddShape">
-      <el-button>
-        <Proportions :size="16" />
-      </el-button>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item command="shape">
-            <RectangleVertical :size="16" class="mr-2" />9:16
-          </el-dropdown-item>
-          <el-dropdown-item command="shape">
-            <RectangleHorizontal :size="16" class="mr-2" />16:9
-          </el-dropdown-item>
-          <el-dropdown-item command="image">
-            <Square :size="16" class="mr-2" />1:1
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
+    <div>
+      <el-popover placement="bottom" trigger="hover">
+        <template #reference>
+          <el-button>
+            <SquareDashed :size="16" />
+          </el-button>
+        </template>
+
+        <main class="palette-color-list flex flex-wrap gap-2">
+          <template v-for="(item, i) in colorList" :key="item + i">
+            <span
+              class="inline-block w-6 h-6 rounded-sm cursor-pointer"
+              :style="`background:${item}`"
+              @click="setColor(item)"
+            ></span>
+          </template>
+        </main>
+      </el-popover>
+
+      <el-dropdown placement="bottom-start" @command="handleAddShape">
+        <el-button>
+          <Proportions :size="16" />
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="shape">
+              <RectangleVertical :size="16" class="mr-2" />9:16
+            </el-dropdown-item>
+            <el-dropdown-item command="shape">
+              <RectangleHorizontal :size="16" class="mr-2" />16:9
+            </el-dropdown-item>
+            <el-dropdown-item command="image">
+              <Square :size="16" class="mr-2" />1:1
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
   </div>
 </template>
 

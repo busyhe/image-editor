@@ -29,10 +29,10 @@ class WorkspacePlugin implements IPluginTempl {
   ) {
     this.workspace = null
     this.init({
-      width: 1080,
-      height: 1920,
+      width: 900,
+      height: 2000,
     })
-    this.zoomRatio = 0.7
+    this.zoomRatio = 0.85
   }
 
   init(option: { width: number; height: number }) {
