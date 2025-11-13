@@ -1,17 +1,8 @@
-/*
- * @Author: 秦少卫
- * @Date: 2023-05-19 08:31:34
- * @LastEditors: June
- * @LastEditTime: 2024-11-10 11:31:24
- * @Description: 拖拽插件
- */
-
-import { IEditor, IPluginTempl } from '@/lib/core'
+import type { IEditor, IPluginTempl } from '@/lib/core'
 
 type IPlugin = Pick<DringPlugin, 'startDring' | 'endDring'>
 
 declare module '@/lib/core' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface IEditor extends IPlugin {}
 }
 
@@ -24,7 +15,7 @@ export class DringPlugin implements IPluginTempl {
   dragMode = false
   constructor(
     public canvas: fabric.Canvas,
-    public editor: IEditor
+    public editor: IEditor,
   ) {
     this.dragMode = false
     this.init()
@@ -109,7 +100,7 @@ export class DringPlugin implements IPluginTempl {
   }
 
   // 快捷键扩展回调
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   hotkeyEvent(eventName: string, e: KeyboardEvent) {
     if (e.code === 'Space' && e.type === 'keydown') {
       if (!this.dragMode) {

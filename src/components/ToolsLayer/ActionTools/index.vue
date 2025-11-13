@@ -49,6 +49,32 @@ const colorList = ref([
   '#a8e6cf',
 ])
 const color = ref('rgba(255, 255, 255, 1)')
+const sizeList = ref([
+  {
+    id: 1,
+    icon: RectangleVertical,
+    name: '9:16',
+    width: 1080,
+    height: 1920,
+    unit: 'px',
+  },
+  {
+    id: 2,
+    icon: RectangleHorizontal,
+    name: '16:9',
+    width: 1920,
+    height: 1080,
+    unit: 'px',
+  },
+  {
+    id: 3,
+    icon: Square,
+    name: '1:1',
+    width: 1080,
+    height: 1080,
+    unit: 'px',
+  },
+])
 
 const handleAddText = debounce(function (type: texts) {
   let text: fabric.IText | null
@@ -168,6 +194,13 @@ function setColor(_color: string) {
   color.value = _color
 }
 
+const handleSetSize = (command: number) => {
+  const item = sizeList.value.find((item) => item.id === command)
+  if (item) {
+    editorStore.editor?.setSize(item.width, item.height)
+  }
+}
+
 function endConflictTools() {
   editorStore.editor.discardPolygon()
   editorStore.editor.endDraw()
@@ -225,20 +258,14 @@ onDeactivated(() => {
         </main>
       </el-popover>
 
-      <el-dropdown placement="bottom-start" @command="handleAddText">
+      <el-dropdown placement="bottom-start" @command="handleSetSize">
         <el-button>
           <Proportions :size="16" />
         </el-button>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="shape">
-              <RectangleVertical :size="16" class="mr-2" />9:16
-            </el-dropdown-item>
-            <el-dropdown-item command="shape">
-              <RectangleHorizontal :size="16" class="mr-2" />16:9
-            </el-dropdown-item>
-            <el-dropdown-item command="image">
-              <Square :size="16" class="mr-2" />1:1
+            <el-dropdown-item v-for="item in sizeList" :key="item.id" :command="item.id">
+              <component :is="item.icon" :size="16" class="mr-2" />{{ item.name }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>

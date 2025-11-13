@@ -32,7 +32,7 @@ class WorkspacePlugin implements IPluginTempl {
       width: 900,
       height: 2000,
     })
-    this.zoomRatio = 0.85
+    this.zoomRatio = 0.75
   }
 
   init(option: { width: number; height: number }) {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Layers, ZoomIn, ZoomOut, Fullscreen } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/modules/editor'
+import Drag from './Drag.vue'
 
 const editorStore = useEditorStore()
 
@@ -18,7 +19,7 @@ const handleZoomOut = () => {
 </script>
 
 <template>
-  <div class="flex gap-2">
+  <div class="flex gap-2 items-center">
     <el-button>
       <el-icon><Layers /></el-icon>
     </el-button>
@@ -34,5 +35,7 @@ const handleZoomOut = () => {
         <el-icon><ZoomOut /></el-icon>
       </el-button>
     </el-button-group>
+
+    <Drag />
   </div>
 </template>

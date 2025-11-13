@@ -8,10 +8,11 @@ import Editor, {
   AlignGuidLinePlugin,
   CenterAlignPlugin,
   ControlsPlugin,
+  DringPlugin,
   HistoryPlugin,
+  LayerPlugin,
   RulerPlugin,
   WorkspacePlugin,
-  LayerPlugin,
 } from '@/lib/core'
 import { useEditorStore } from '@/stores/modules/editor'
 
@@ -32,13 +33,14 @@ onMounted(() => {
   canvasEditor.init(canvas)
 
   canvasEditor.use(AddBaseTypePlugin)
-  canvasEditor.use(CenterAlignPlugin)
-  canvasEditor.use(WorkspacePlugin)
-  canvasEditor.use(RulerPlugin)
-  canvasEditor.use(HistoryPlugin)
-  canvasEditor.use(ControlsPlugin)
   canvasEditor.use(AlignGuidLinePlugin)
+  canvasEditor.use(CenterAlignPlugin)
+  canvasEditor.use(ControlsPlugin)
+  canvasEditor.use(DringPlugin)
+  canvasEditor.use(HistoryPlugin)
   canvasEditor.use(LayerPlugin)
+  canvasEditor.use(RulerPlugin)
+  canvasEditor.use(WorkspacePlugin)
 
   editorStore.setEditor(canvasEditor)
   editorStore.setCanvas(canvas)

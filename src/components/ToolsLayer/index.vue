@@ -5,6 +5,7 @@ import ActionTools from './ActionTools/index.vue'
 import Layer from './Layer/index.vue'
 import CanvasList from './CanvasList/index.vue'
 import LayerButton from './LayerButton/index.vue'
+import Panel from './Panel/index.vue'
 </script>
 
 <template>
@@ -16,6 +17,8 @@ import LayerButton from './LayerButton/index.vue'
   <ActionTools class="absolute top-4 w-[80%] ml-[10%]" />
   <!-- 图层栏 -->
   <Layer class="absolute left-0 bottom-16 flex gap-2 justify-center p-0 px-4" />
+  <!-- 面板 -->
+  <Panel class="absolute left-18 bottom-16" />
   <!-- 图层按钮 -->
   <LayerButton class="absolute left-4 bottom-4" />
   <!-- 画布列表 -->

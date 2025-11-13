@@ -370,6 +370,7 @@ onBeforeUnmount(() => {
     8px 8px;
   background-size: 16px 16px;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .layer-thumbnail {
@@ -408,6 +409,6 @@ onBeforeUnmount(() => {
 }
 
 .active {
-  border: 1px solid #00cae0;
+  border: 2px solid #00cae0;
 }
 </style>
