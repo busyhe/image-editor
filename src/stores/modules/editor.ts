@@ -19,7 +19,7 @@ interface IState {
   tabType: editorTabs
   panelType: panels
   showPanel: boolean
-  panelPositoin: 'left' | 'bottom'
+  panelPosition: 'left' | 'bottom'
 }
 
 export const useEditorStore = defineStore({
@@ -29,10 +29,10 @@ export const useEditorStore = defineStore({
     canvas: null,
     zoom: 1, // 缩放比例
     rulerEnable: true, // 是否开启标尺
-    tabType: editorTabs.template, // 左边栏
-    panelType: panels.menu, // 面板类型
-    showPanel: true, // 显示面板侧边栏
-    panelPositoin: 'left', // 面板侧栏位置
+    tabType: editorTabs.text, // 左边栏
+    panelType: panels.text, // 面板类型
+    showPanel: false, // 显示面板侧边栏
+    panelPosition: 'left', // 面板侧栏位置
   }),
   actions: {
     setEditor(editor: any) {
@@ -56,8 +56,8 @@ export const useEditorStore = defineStore({
     setShowPanel(val: boolean) {
       this.showPanel = val
     },
-    setPanelPositoin(pos: 'left' | 'bottom') {
-      this.panelPositoin = pos
+    setPanelPosition(pos: 'left' | 'bottom') {
+      this.panelPosition = pos
     },
   },
 })

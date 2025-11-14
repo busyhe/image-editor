@@ -14,14 +14,16 @@ import {
 } from 'lucide-vue-next'
 import { fabric } from 'fabric'
 import { useEditorStore } from '@/stores/modules/editor'
-import { texts, shapes, DrawTypes } from '@/enums/editor'
+import { texts, shapes, DrawTypes, panels } from '@/enums/editor'
 import { getPolygonVertices } from '@/utils/math'
+import { storeToRefs } from 'pinia'
 
+const editorStore = useEditorStore()
+const { showPanel } = storeToRefs(editorStore)
 // 绘制元素相关
 const curDrawType = ref<DrawTypes | ''>('')
 const isDrawingLineMode = ref(false)
 const defaultPosition = { shadow: '', fontFamily: 'arial' }
-const editorStore = useEditorStore()
 const colorList = ref([
   '#5F2B63',
   '#B23554',
@@ -172,15 +174,17 @@ const handleAddShape = debounce(function (type: shapes) {
   }
 }, 250)
 
-const handleAddType = (type: string) => {
-  switch (type) {
-    case 'text':
-      handleAddText(texts.h1)
-      break
-    case 'shape':
-      handleAddShape(shapes.react)
-      break
-  }
+const handleAddType = (type: panels) => {
+  !unref(showPanel) && editorStore.setShowPanel(true)
+  editorStore.setPanelType(type)
+  // switch (type) {
+  //   case 'text':
+  //     handleAddText(texts.h1)
+  //     break
+  //   case 'shape':
+  //     handleAddShape(shapes.react)
+  //     break
+  // }
 }
 
 function setColor(_color: string) {
@@ -230,11 +234,15 @@ onDeactivated(() => {
 
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item command="text"><Type :size="16" class="mr-2" />文字</el-dropdown-item>
-          <el-dropdown-item command="shape">
+          <el-dropdown-item :command="panels.text"
+            ><Type :size="16" class="mr-2" />文字</el-dropdown-item
+          >
+          <el-dropdown-item :command="panels.shape">
             <Shapes :size="16" class="mr-2" />形状
           </el-dropdown-item>
-          <el-dropdown-item command="image"><Image :size="16" class="mr-2" />图片</el-dropdown-item>
+          <el-dropdown-item :command="panels.upload"
+            ><Image :size="16" class="mr-2" />上传</el-dropdown-item
+          >
         </el-dropdown-menu>
       </template>
     </el-dropdown>

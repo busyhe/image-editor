@@ -7,25 +7,23 @@
  * @FilePath: \element-fabric-editor\src\enums\editor.ts
  */
 export enum editorTabs {
-  create = 'CGRATE',
-  template = 'TEMPLATE',
   text = 'TEXT',
-  material = 'Material',
-  ai = 'AI',
-  mine = 'MINE',
-  none = ''
+  shape = 'SHAPE',
+  image = 'IMAGE',
+  upload = 'UPLOAD',
 }
 
 export enum panels {
-  canvas = 'CANVASLIST',
-  layer = 'LAYER',
-  menu = 'MENU'
+  text = 'TEXT',
+  image = 'IMAGE',
+  shape = 'SHAPE',
+  upload = 'UPLOAD',
 }
 
 export enum texts {
   h1 = 'TEXT-H1,',
   h2 = 'TEXT-H2',
-  normal = 'TEXT-NORMAL'
+  normal = 'TEXT-NORMAL',
 }
 
 export enum shapes {
@@ -33,12 +31,12 @@ export enum shapes {
   triangle = 'Triangle',
   around = 'Around',
   polygon = 'Polygon',
-  line = 'LINE'
+  line = 'LINE',
 }
 
 export enum codes {
   qrcode = 'QRCODE',
-  barCode = 'BARCODE'
+  barCode = 'BARCODE',
 }
 
 export enum files {
@@ -46,7 +44,7 @@ export enum files {
   img = 'IMAGE',
   json = 'JSON',
   svg = 'SVG',
-  psd = 'PSD'
+  psd = 'PSD',
 }
 
 export enum DrawTypes {
@@ -54,5 +52,5 @@ export enum DrawTypes {
   arrow = 'Arrow',
   thinTailArrow = 'ThinTailArrow',
   polygon = 'Polygon',
-  freeDraw = 'FreeDraw'
+  freeDraw = 'FreeDraw',
 }
