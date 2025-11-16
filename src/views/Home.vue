@@ -13,6 +13,20 @@ import Editor, {
   LayerPlugin,
   RulerPlugin,
   WorkspacePlugin,
+  CopyPlugin,
+  MoveHotKeyPlugin,
+  FlipPlugin,
+  DeleteHotKeyPlugin,
+  ControlsRotatePlugin,
+  FontPlugin,
+  GroupPlugin,
+  GroupAlignPlugin,
+  GroupTextEditorPlugin,
+  ImageStroke,
+  LockPlugin,
+  MaskPlugin,
+  MaterialPlugin,
+  SimpleClipImagePlugin,
 } from '@/lib/core'
 import { useEditorStore } from '@/stores/modules/editor'
 
@@ -41,6 +55,20 @@ onMounted(() => {
   canvasEditor.use(LayerPlugin)
   canvasEditor.use(RulerPlugin)
   canvasEditor.use(WorkspacePlugin)
+  canvasEditor.use(CopyPlugin)
+  canvasEditor.use(MoveHotKeyPlugin)
+  canvasEditor.use(FlipPlugin)
+  canvasEditor.use(DeleteHotKeyPlugin)
+  canvasEditor.use(ControlsRotatePlugin)
+  // canvasEditor.use(FontPlugin)
+  canvasEditor.use(GroupPlugin)
+  canvasEditor.use(GroupAlignPlugin)
+  canvasEditor.use(GroupTextEditorPlugin)
+  canvasEditor.use(ImageStroke)
+  canvasEditor.use(LockPlugin)
+  canvasEditor.use(MaskPlugin)
+  // canvasEditor.use(MaterialPlugin)
+  canvasEditor.use(SimpleClipImagePlugin)
 
   editorStore.setEditor(canvasEditor)
   editorStore.setCanvas(canvas)

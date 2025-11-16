@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, unref, onDeactivated } from 'vue'
+import { ref, unref, computed, onDeactivated } from 'vue'
 import { debounce } from 'lodash-es'
 import {
   Plus,
@@ -17,8 +17,13 @@ import { useEditorStore } from '@/stores/modules/editor'
 import { texts, shapes, DrawTypes, panels } from '@/enums/editor'
 import { getPolygonVertices } from '@/utils/math'
 import { storeToRefs } from 'pinia'
+import AttributePosition from './AttributePosition/index.vue'
+import useSelect from '@/hooks/select'
 
 const editorStore = useEditorStore()
+const { mixinState } = useSelect()
+const editor = computed(() => editorStore.editor)
+
 const { showPanel } = storeToRefs(editorStore)
 // 绘制元素相关
 const curDrawType = ref<DrawTypes | ''>('')
@@ -247,7 +252,7 @@ onDeactivated(() => {
       </template>
     </el-dropdown>
 
-    <div>
+    <div v-show="!mixinState.mSelectMode">
       <el-popover placement="bottom" trigger="hover">
         <template #reference>
           <el-button>
@@ -279,6 +284,10 @@ onDeactivated(() => {
         </template>
       </el-dropdown>
     </div>
+
+    <!-- <div v-show="mixinState.mSelectMode === 'one'"> -->
+    <AttributePosition />
+    <!-- </div> -->
   </div>
 </template>
 

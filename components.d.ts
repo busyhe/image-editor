@@ -13,6 +13,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ActionTools: typeof import('./src/components/ToolsLayer/ActionTools/index.vue')['default']
+    AttributePosition: typeof import('./src/components/ToolsLayer/ActionTools/AttributePosition/index.vue')['default']
+    AttributePostion: typeof import('./src/components/ToolsLayer/ActionTools/AttributePostion.vue')['default']
     CanvasList: typeof import('./src/components/ToolsLayer/CanvasList/index.vue')['default']
     Drag: typeof import('./src/components/ToolsLayer/LayerButton/Drag.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
@@ -49,6 +51,8 @@ declare module 'vue' {
 // For TSX support
 declare global {
   const ActionTools: typeof import('./src/components/ToolsLayer/ActionTools/index.vue')['default']
+  const AttributePosition: typeof import('./src/components/ToolsLayer/ActionTools/AttributePosition/index.vue')['default']
+  const AttributePostion: typeof import('./src/components/ToolsLayer/ActionTools/AttributePostion.vue')['default']
   const CanvasList: typeof import('./src/components/ToolsLayer/CanvasList/index.vue')['default']
   const Drag: typeof import('./src/components/ToolsLayer/LayerButton/Drag.vue')['default']
   const ElButton: typeof import('element-plus/es')['ElButton']

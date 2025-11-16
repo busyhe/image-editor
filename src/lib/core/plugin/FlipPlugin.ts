@@ -1,13 +1,13 @@
 import { fabric } from 'fabric'
 import type Editor from '../Editor'
 import { SelectMode } from '../eventType'
-import { i18n } from '@/locales'
+
 export default class FlipPlugin implements IPluginTempl {
   static pluginName = 'FlipPlugin'
   static apis = ['flip']
   constructor(
     public canvas: fabric.Canvas,
-    public editor: Editor
+    public editor: Editor,
   ) {}
 
   flip(type: 'X' | 'Y') {
@@ -27,17 +27,17 @@ export default class FlipPlugin implements IPluginTempl {
           hotkey: '❯',
           subitems: [
             {
-              text: i18n.global.t('editor.flip.x'),
+              text: '水平翻转',
               hotkey: '|',
-              onclick: () => this.flip('X')
+              onclick: () => this.flip('X'),
             },
             {
-              text: i18n.global.t('editor.flip.y'),
+              text: '垂直翻转',
               hotkey: '-',
-              onclick: () => this.flip('Y')
-            }
-          ]
-        }
+              onclick: () => this.flip('Y'),
+            },
+          ],
+        },
       ]
     }
   }

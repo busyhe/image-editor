@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import hotkeys from 'hotkeys-js'
-// import ContextMenu from './ContextMenu'
+import ContextMenu from './ContextMenu'
 import ServersPlugin from './ServersPlugin'
 import { AsyncSeriesHook } from 'tapable'
 import Utils from './utils/utils'
@@ -30,8 +30,8 @@ class Editor extends EventEmitter {
 
   init(canvas: fabric.Canvas) {
     this.canvas = canvas
-    // this._initContextMenu()
-    // this._bindContextMenu()
+    this._initContextMenu()
+    this._bindContextMenu()
     this._initActionHooks()
     this._initServersPlugin()
 
@@ -170,10 +170,10 @@ class Editor extends EventEmitter {
     })
   }
 
-  // _initContextMenu() {
-  //   this.contextMenu = new ContextMenu(this.canvas!.wrapperEl, [])
-  //   this.contextMenu.install()
-  // }
+  _initContextMenu() {
+    this.contextMenu = new ContextMenu(this.canvas!.wrapperEl, [])
+    this.contextMenu.install()
+  }
 
   _initServersPlugin() {
     this.use(ServersPlugin)

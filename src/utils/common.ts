@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 // 是否https 等开头
 export const isExternal = (path: string) => {
   return /^(https?:|mailto:|tel:)/.test(path)
