@@ -22,5 +22,5 @@ import Panel from './Panel/index.vue'
   <!-- 图层按钮 -->
   <LayerButton class="absolute left-4 bottom-4" />
   <!-- 画布列表 -->
-  <Templates class="absolute right-0 bottom-[68px] flex gap-2 justify-center p-0 px-[12px]" />
+  <Templates class="absolute right-4 bottom-4 flex gap-2 justify-center p-0 px-[12px]" />
 </template>
