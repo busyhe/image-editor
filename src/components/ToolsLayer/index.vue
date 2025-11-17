@@ -3,7 +3,7 @@ import Title from './Title/index.vue'
 import Export from './Export/index.vue'
 import ActionTools from './ActionTools/index.vue'
 import Layer from './Layer/index.vue'
-import CanvasList from './CanvasList/index.vue'
+import Templates from './Templates/index.vue'
 import LayerButton from './LayerButton/index.vue'
 import Panel from './Panel/index.vue'
 </script>
@@ -22,5 +22,5 @@ import Panel from './Panel/index.vue'
   <!-- 图层按钮 -->
   <LayerButton class="absolute left-4 bottom-4" />
   <!-- 画布列表 -->
-  <CanvasList class="absolute right-0 bottom-[68px] flex gap-2 justify-center p-0 px-[12px]" />
+  <Templates class="absolute right-0 bottom-[68px] flex gap-2 justify-center p-0 px-[12px]" />
 </template>
