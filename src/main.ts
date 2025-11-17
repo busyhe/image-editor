@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router'
 import { setupStore } from './stores'
 import './globals.css'
+import 'element-plus/theme-chalk/src/message-box.scss'
 
 const app = createApp(App)
 

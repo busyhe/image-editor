@@ -4,7 +4,7 @@ import { useTemplateStore } from '@/stores/modules/template'
 import { storeToRefs } from 'pinia'
 import TemplateThumb from './TemplateThumb.vue'
 import Draggable from 'vuedraggable'
-import { Plus, Copy, Trash2 } from 'lucide-vue-next'
+import { Plus, Copy, Trash2, ChevronUp, ChevronDown } from 'lucide-vue-next'
 import { ElMessageBox } from 'element-plus'
 import { v4 as uuidv4 } from 'uuid'
 import type { Template } from '@/types/template'
@@ -13,6 +13,7 @@ const templateStore = useTemplateStore()
 const { templateList, curTempIdx } = storeToRefs(templateStore)
 
 const templatesLoadLimit = ref(20) // 初始加载的缩略图数量
+const templatesExpanded = ref(false) // 是否展开
 
 const fillDigit = (num: number, digit: number) => {
   return num.toString().padStart(digit, '0')
@@ -71,12 +72,14 @@ const handleAddTemplate = async () => {
   }
 
   await templateStore.addTemplate(newTemplate)
+  !templatesExpanded.value && (templatesExpanded.value = true)
 }
 
 // 复制页面
 const handleDuplicateTemplate = async () => {
   if (curTempIdx.value < 0) return
   await templateStore.duplicateTemplate()
+  !templatesExpanded.value && (templatesExpanded.value = true)
 }
 
 // 删除页面
@@ -88,23 +91,26 @@ const handleDeleteTemplate = async () => {
     return
   }
 
+  !templatesExpanded.value && (templatesExpanded.value = true)
+
   ElMessageBox.confirm('确定删除当前页面吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
+  }).then(async () => {
+    await templateStore.deleteTemplate()
   })
-    .then(async () => {
-      await templateStore.deleteTemplate()
-    })
-    .catch(() => {
-      // 取消删除
-    })
+}
+
+// 展开/收起
+const handleToggleTemplates = () => {
+  templatesExpanded.value = !templatesExpanded.value
 }
 </script>
 
 <template>
   <div class="templates-container">
-    <div class="templates-actions">
+    <div class="templates-actions border-gray-200" :class="{ 'border-b': templatesExpanded }">
       <button class="action-btn" @click="handleAddTemplate" title="新增页面">
         <Plus :size="16" />
       </button>
@@ -114,37 +120,47 @@ const handleDeleteTemplate = async () => {
       <button class="action-btn" @click="handleDeleteTemplate" title="删除页面">
         <Trash2 :size="16" />
       </button>
+      <button
+        class="action-btn"
+        @click="handleToggleTemplates"
+        :title="templatesExpanded ? '收起' : '展开'"
+      >
+        <ChevronDown v-if="templatesExpanded" :size="16" />
+        <ChevronUp v-else :size="16" />
+      </button>
     </div>
 
-    <Draggable
-      v-model="templateList"
-      :animation="300"
-      :scroll="true"
-      :scrollSensitivity="50"
-      @end="handleDragEnd"
-      item-key="id"
-      class="templates-list"
-    >
-      <template #item="{ element, index }">
-        <div
-          :class="{
-            'template-item': true,
-            active: curTempIdx === index,
-          }"
-          @mousedown="($event: MouseEvent) => handleClickTemplateThumbnail($event, index)"
-        >
-          <div class="label">{{ fillDigit(index + 1, 2) }}</div>
-          <TemplateThumb
-            class="thumbnail"
-            :template="element"
-            :size="100"
-            :visible="index < templatesLoadLimit"
-            :active="curTempIdx === index"
-            @click="($event: MouseEvent) => handleClickTemplateThumbnail($event, index)"
-          />
-        </div>
-      </template>
-    </Draggable>
+    <template v-if="templatesExpanded">
+      <Draggable
+        v-model="templateList"
+        :animation="300"
+        :scroll="true"
+        :scrollSensitivity="50"
+        @end="handleDragEnd"
+        item-key="id"
+        class="templates-list"
+      >
+        <template #item="{ element, index }">
+          <div
+            :class="{
+              'template-item': true,
+              active: curTempIdx === index,
+            }"
+            @mousedown="($event: MouseEvent) => handleClickTemplateThumbnail($event, index)"
+          >
+            <div class="label">{{ fillDigit(index + 1, 2) }}</div>
+            <TemplateThumb
+              class="thumbnail"
+              :template="element"
+              :size="100"
+              :visible="index < templatesLoadLimit"
+              :active="curTempIdx === index"
+              @click="($event: MouseEvent) => handleClickTemplateThumbnail($event, index)"
+            />
+          </div>
+        </template>
+      </Draggable>
+    </template>
 
     <div class="templates-info">{{ curTempIdx + 1 }} / {{ templateList.length }}</div>
   </div>
@@ -167,7 +183,6 @@ const handleDeleteTemplate = async () => {
   display: flex;
   gap: 4px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #e5e7eb;
 }
 
 .action-btn {

@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
   <div>
     <el-popover placement="bottom" :width="400" trigger="hover">
       <template #reference>
-        <el-button>
+        <el-button title="排列">
           <SquareSquare :size="16" />
         </el-button>
       </template>

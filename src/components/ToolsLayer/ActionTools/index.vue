@@ -233,7 +233,7 @@ onDeactivated(() => {
 <template>
   <div class="flex justify-center gap-2">
     <el-dropdown placement="bottom-end" @command="handleAddType">
-      <el-button>
+      <el-button title="新增">
         <el-icon><Plus /></el-icon>
       </el-button>
 
@@ -255,7 +255,7 @@ onDeactivated(() => {
     <div v-show="!mixinState.mSelectMode">
       <el-popover placement="bottom" trigger="hover">
         <template #reference>
-          <el-button>
+          <el-button title="背景">
             <SquareDashed :size="16" />
           </el-button>
         </template>
@@ -272,7 +272,7 @@ onDeactivated(() => {
       </el-popover>
 
       <el-dropdown placement="bottom-start" @command="handleSetSize">
-        <el-button>
+        <el-button title="尺寸">
           <Proportions :size="16" />
         </el-button>
         <template #dropdown>

@@ -29,7 +29,9 @@ const closePanel = () => {
 
 <template>
   <div v-show="showPanel">
-    <div class="bg-white rounded-md flex flex-col h-[calc(100vh-140px)] relative w-[280px]">
+    <div
+      class="bg-white rounded-md flex flex-col h-[calc(100vh-140px)] relative w-[280px] shadow-[0_.1px_8px_0_#1f426614]"
+    >
       <div
         class="panel-header flex items-center justify-between border-b border-[#DCDFE6] h-[48px] pl-4 pr-2 relative w-full z-1"
       >

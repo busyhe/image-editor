@@ -144,7 +144,7 @@ const setThumbnailElement = async () => {
   cursor: pointer;
   transition: all 0.2s ease;
   border-radius: 4px;
-  border: 2px solid transparent;
+  border: 2px solid #0732470f;
 
   &:hover {
     border-color: rgba(64, 158, 255, 0.3);
