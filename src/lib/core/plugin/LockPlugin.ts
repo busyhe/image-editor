@@ -1,10 +1,3 @@
-/*
- * @Author: 秦少卫
- * @Date: 2024-07-04 14:27:05
- * @LastEditors: June
- * @LastEditTime: 2024-12-26 14:03:10
- * @Description: 锁定文件
- */
 import { fabric } from 'fabric'
 import { SelectEvent, SelectMode } from '../eventType'
 import Editor from '../Editor'
@@ -15,7 +8,7 @@ enum ItypeKey {
   lockMovementY = 'lockMovementY',
   lockRotation = 'lockRotation',
   lockScalingX = 'lockScalingX',
-  lockScalingY = 'lockScalingY'
+  lockScalingY = 'lockScalingY',
 }
 
 enum IControlKey {
@@ -28,7 +21,7 @@ enum IControlKey {
   tl = 'tl',
   tr = 'tr',
   mtr = 'mtr',
-  lock = 'lock'
+  lock = 'lock',
 }
 
 export default class LockPlugin implements IPluginTempl {
@@ -36,7 +29,7 @@ export default class LockPlugin implements IPluginTempl {
   static apis = ['lock', 'unLock']
   constructor(
     public canvas: fabric.Canvas,
-    public editor: Editor
+    public editor: Editor,
   ) {
     this.init()
   }
@@ -50,7 +43,7 @@ export default class LockPlugin implements IPluginTempl {
       left: number,
       top: number,
       styleOverride: any,
-      fabricObject: fabric.Object
+      fabricObject: fabric.Object,
     ) {
       const iconWith = 25
       ctx.save()
@@ -72,7 +65,7 @@ export default class LockPlugin implements IPluginTempl {
       offsetY: 0,
       cursorStyle: 'pointer',
       mouseUpHandler: unLockObject,
-      render: renderIcon
+      render: renderIcon,
     })
 
     fabric.Textbox.prototype.controls.lock = new fabric.Control({
@@ -81,15 +74,13 @@ export default class LockPlugin implements IPluginTempl {
       offsetY: 0,
       cursorStyle: 'pointer',
       mouseUpHandler: unLockObject,
-      render: renderIcon
+      render: renderIcon,
     })
     this.canvas.on('selection:created', () => this.renderCornerByActiveObj())
     this.canvas.on('selection:updated', () => this.renderCornerByActiveObj())
 
     // 鼠标框选不能多选锁定元素
-    ;(fabric.Canvas.prototype as any)._groupSelectedObjects = function (
-      e: any
-    ) {
+    ;(fabric.Canvas.prototype as any)._groupSelectedObjects = function (e: any) {
       const group = this._collectObjects(e)
       let aGroup
 
@@ -104,17 +95,14 @@ export default class LockPlugin implements IPluginTempl {
         this.setActiveObject(group[0], e)
       } else if (group.length > 1) {
         aGroup = new fabric.ActiveSelection(group.reverse(), {
-          canvas: this
+          canvas: this,
         })
         this.setActiveObject(aGroup, e)
       }
     }
 
     // shift+左键点选不能多选锁定元素
-    ;(fabric.Canvas.prototype as any)._handleGrouping = function (
-      e: any,
-      target: fabric.Object
-    ) {
+    ;(fabric.Canvas.prototype as any)._handleGrouping = function (e: any, target: fabric.Object) {
       const activeObject = this._activeObject
       // avoid multi select when shift click on a corner
       if (activeObject.__corner) {
@@ -180,6 +168,9 @@ export default class LockPlugin implements IPluginTempl {
   lock() {
     const activeObject = this.canvas.getActiveObject() as fabric.Object
     if (activeObject) {
+      activeObject.selectable = false
+      activeObject.hasControls = false
+      activeObject.evented = false
       // 修改默认属性
       Object.values(ItypeKey).forEach((key: ItypeKey) => {
         activeObject[key] = true
@@ -208,6 +199,7 @@ export default class LockPlugin implements IPluginTempl {
 
   contextMenu() {
     const selectedMode = this.editor.getSelectMode()
+    console.debug('[DEBUG__plugin/LockPlugin.ts-selectedMode]', selectedMode)
     const activeObject = this.canvas.getActiveObject()
     if (selectedMode === SelectMode.ONE && activeObject) {
       if (activeObject.selectable) {
