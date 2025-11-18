@@ -285,9 +285,9 @@ onDeactivated(() => {
       </el-dropdown>
     </div>
 
-    <!-- <div v-show="mixinState.mSelectMode === 'one'"> -->
-    <AttributePosition />
-    <!-- </div> -->
+    <div v-show="mixinState.mSelectMode === 'one'">
+      <AttributePosition />
+    </div>
   </div>
 </template>
 

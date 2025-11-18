@@ -45,16 +45,16 @@ const baseAttr = reactive<Record<string, any>>({
 // 属性获取
 const getObjectAttr = (e?: any) => {
   const activeObject = editorStore.canvas?.getActiveObject()
-  // 不是当前obj，跳过
-  if (e && e.target && e.target !== activeObject) return
+  // 只在fabric事件中检查是否是当前obj，DOM事件不检查
+  if (e && e.target && typeof e.target.get === 'function' && e.target !== activeObject) return
   console.debug('[DEBUG__AttributePosition/index.vue-activeObject]', activeObject)
 
   if (activeObject && isMatchType) {
     baseAttr.opacity = (activeObject.get('opacity') ?? 0) * 100
     baseAttr.left = activeObject.get('left')
     baseAttr.top = activeObject.get('top')
-    baseAttr.width = activeObject.get('width')
-    baseAttr.height = activeObject.get('height')
+    baseAttr.width = activeObject.getScaledWidth()
+    baseAttr.height = activeObject.getScaledHeight()
     baseAttr.angle = activeObject.get('angle') || 0
   }
 }
@@ -72,6 +72,23 @@ const changeCommon = (key: any, value: any) => {
     // 旋转角度适配
     if (key === 'angle') {
       activeObject.rotate(value)
+      editorStore.canvas?.renderAll()
+      return
+    }
+    // 宽度高度需要通过缩放来设置
+    if (key === 'width') {
+      const originalWidth = activeObject.get('width')
+      if (originalWidth) {
+        activeObject.set('scaleX', value / originalWidth)
+      }
+      editorStore.canvas?.renderAll()
+      return
+    }
+    if (key === 'height') {
+      const originalHeight = activeObject.get('height')
+      if (originalHeight) {
+        activeObject.set('scaleY', value / originalHeight)
+      }
       editorStore.canvas?.renderAll()
       return
     }
@@ -103,9 +120,7 @@ const handleCenterHorizontal = () => {
 }
 
 onMounted(() => {
-  console.debug('[DEBUG__AttributePosition/index.vue-onMounted]')
   nextTick(() => {
-    // 获取字体数据
     getObjectAttr()
     editorStore.editor?.on('selectOne', getObjectAttr)
     editorStore.canvas?.on('object:modified', getObjectAttr)
@@ -120,7 +135,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div>
-    <el-popover placement="bottom" :width="400" trigger="hover">
+    <el-popover placement="bottom" :width="400" trigger="hover" @show="getObjectAttr">
       <template #reference>
         <el-button title="排列">
           <SquareSquare :size="16" />
