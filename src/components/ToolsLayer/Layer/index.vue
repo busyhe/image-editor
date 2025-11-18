@@ -9,6 +9,8 @@ import Draggable from 'vuedraggable'
 const editorStore = useEditorStore()
 const { mixinState } = useSelect()
 const list: any = ref([])
+// 拖拽状态标志，防止拖拽时触发点击事件
+const isDragging = ref(false)
 
 // 缩略图缓存，key 为 图层id + 修改时间戳
 const thumbnailCache = new Map<string, string>()
@@ -83,16 +85,34 @@ const iconType = (type: string) => {
 
 // 选中元素
 const select = (id: string) => {
+  // 如果正在拖拽，不触发选择
+  if (isDragging.value) {
+    return
+  }
   const info = editorStore.canvas?.getObjects().find((item: any) => item.id === id) as fabric.Object
   editorStore.canvas?.discardActiveObject()
   editorStore.canvas?.setActiveObject(info)
   editorStore.canvas?.requestRenderAll()
 }
 
+// 拖拽开始处理
+const handleDragStart = () => {
+  isDragging.value = true
+}
+
 // 拖拽结束处理 - 同步更新 canvas 中的图层顺序
 const handleDragEnd = (event: any) => {
-  const { newIndex, oldIndex } = event
-  if (newIndex === oldIndex || !editorStore.canvas) return
+  isDragging.value = false
+
+  const { newIndex, oldIndex, item } = event
+  if (
+    newIndex === oldIndex ||
+    newIndex === undefined ||
+    oldIndex === undefined ||
+    !editorStore.canvas
+  ) {
+    return
+  }
 
   console.debug(`[Layer] 拖拽图层: ${oldIndex} -> ${newIndex}`)
 
@@ -104,19 +124,38 @@ const handleDragEnd = (event: any) => {
     return !(item instanceof fabric.GuideLine || item.id === 'workspace')
   })
 
-  // 找到被拖拽的对象
-  const draggedItem = list.value[oldIndex]
+  // 使用 event.item.element 获取被拖拽的对象，而不是通过索引访问
+  // 因为 v-model 在 @end 事件触发前已经更新了列表
+  const draggedItem = item?.element || list.value[newIndex]
+  if (!draggedItem || !draggedItem.id) {
+    console.warn('[Layer] 无法获取被拖拽的对象')
+    return
+  }
+
   const draggedObject = objects.find((obj: any) => obj.id === draggedItem.id)
 
-  if (!draggedObject) return
+  if (!draggedObject) {
+    console.warn(`[Layer] 在 canvas 中找不到对象: ${draggedItem.id}`)
+    return
+  }
 
   // 计算在 canvas 中的目标位置
   // list 是倒序的，所以需要转换：
   // list[0] 对应 canvas 最顶层（objects.length - 1）
   // list[list.length-1] 对应 canvas 最底层（0）
-  const canvasNewIndex = objects.length - 1 - newIndex
+  //
+  // 注意：newIndex 是拖拽后列表中的新位置（已更新后的列表）
+  // 我们需要确保索引在有效范围内
+  let canvasNewIndex = objects.length - newIndex
+  // 确保索引在有效范围内 [0, objects.length - 1]
+  canvasNewIndex = Math.max(0, Math.min(canvasNewIndex, objects.length))
+
+  console.debug(
+    `[Layer] 列表索引 ${newIndex} -> Canvas 索引 ${canvasNewIndex} (总对象数: ${objects.length}, 被拖拽对象ID: ${draggedItem.id})`,
+  )
 
   // 移动对象到新位置
+  // moveTo 会将对象移动到指定的索引位置（0 = 最底层，length-1 = 最顶层）
   editorStore.canvas.moveTo(draggedObject, canvasNewIndex)
 
   // 确保 workspace 始终在最底层
@@ -374,6 +413,7 @@ onBeforeUnmount(() => {
         v-model="list"
         item-key="id"
         animation="200"
+        @start="handleDragStart"
         @end="handleDragEnd"
         handle=".thumbnail-wrapper"
         :disabled="false"
