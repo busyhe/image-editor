@@ -34,6 +34,7 @@ class LayerPlugin implements IPluginTempl {
       activeObject && activeObject.bringForward()
       this.canvas.renderAll()
       this._workspaceSendToBack()
+      this.editor.emit('layer:order:changed')
     }
   }
 
@@ -44,6 +45,7 @@ class LayerPlugin implements IPluginTempl {
       activeObject && activeObject.sendBackwards()
       this.canvas.renderAll()
       this._workspaceSendToBack()
+      this.editor.emit('layer:order:changed')
     }
   }
 
@@ -54,6 +56,7 @@ class LayerPlugin implements IPluginTempl {
       activeObject && activeObject.bringToFront()
       this.canvas.renderAll()
       this._workspaceSendToBack()
+      this.editor.emit('layer:order:changed')
     }
   }
 
@@ -64,6 +67,7 @@ class LayerPlugin implements IPluginTempl {
       activeObject && activeObject.sendToBack()
       this.canvas.renderAll()
       this._workspaceSendToBack()
+      this.editor.emit('layer:order:changed')
     }
   }
 

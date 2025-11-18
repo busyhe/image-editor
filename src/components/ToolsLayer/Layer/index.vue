@@ -4,6 +4,7 @@ import { uniqBy, throttle } from 'lodash-es'
 import { LockKeyhole } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/modules/editor'
 import useSelect from '@/hooks/select'
+import Draggable from 'vuedraggable'
 
 const editorStore = useEditorStore()
 const { mixinState } = useSelect()
@@ -86,6 +87,49 @@ const select = (id: string) => {
   editorStore.canvas?.discardActiveObject()
   editorStore.canvas?.setActiveObject(info)
   editorStore.canvas?.requestRenderAll()
+}
+
+// 拖拽结束处理 - 同步更新 canvas 中的图层顺序
+const handleDragEnd = (event: any) => {
+  const { newIndex, oldIndex } = event
+  if (newIndex === oldIndex || !editorStore.canvas) return
+
+  console.debug(`[Layer] 拖拽图层: ${oldIndex} -> ${newIndex}`)
+
+  // list.value 是倒序的（从上到下显示），需要转换为 canvas 的正序（从下到上）
+  // canvas 中的顺序：索引越大，图层越靠上
+  // 我们的显示顺序：索引越小，图层越靠上（显示在列表顶部）
+
+  const objects = editorStore.canvas.getObjects().filter((item: any) => {
+    return !(item instanceof fabric.GuideLine || item.id === 'workspace')
+  })
+
+  // 找到被拖拽的对象
+  const draggedItem = list.value[oldIndex]
+  const draggedObject = objects.find((obj: any) => obj.id === draggedItem.id)
+
+  if (!draggedObject) return
+
+  // 计算在 canvas 中的目标位置
+  // list 是倒序的，所以需要转换：
+  // list[0] 对应 canvas 最顶层（objects.length - 1）
+  // list[list.length-1] 对应 canvas 最底层（0）
+  const canvasNewIndex = objects.length - 1 - newIndex
+
+  // 移动对象到新位置
+  editorStore.canvas.moveTo(draggedObject, canvasNewIndex)
+
+  // 确保 workspace 始终在最底层
+  const workspace = editorStore.canvas.getObjects().find((item: any) => item.id === 'workspace')
+  workspace && workspace.sendToBack()
+
+  // 渲染画布
+  editorStore.canvas.renderAll()
+
+  // 触发自定义事件，通知其他组件图层顺序已改变
+  editorStore.editor?.emit('layer:order:changed')
+
+  console.debug('[Layer] 图层顺序已更新')
 }
 
 // 同步生成单个图层的缩略图（仅用于缓存命中）
@@ -282,6 +326,10 @@ watch(
       oldCanvas.off('object:removed', throttledGetList)
       oldCanvas.off('object:modified', throttledGetList)
     }
+    // 移除旧 editor 的事件监听
+    if (editorStore.editor) {
+      editorStore.editor.off('layer:order:changed', throttledGetList)
+    }
     // 添加新 canvas 的事件监听
     if (newCanvas) {
       console.debug('[DEBUG__layer/index.vue] Canvas initialized, adding event listeners')
@@ -289,6 +337,8 @@ watch(
       newCanvas.on('object:added', throttledGetList)
       newCanvas.on('object:removed', throttledGetList)
       newCanvas.on('object:modified', throttledGetList)
+      // 监听图层顺序变化事件
+      editorStore.editor?.on('layer:order:changed', throttledGetList)
       // 首次加载立即执行
       getList()
     }
@@ -303,6 +353,10 @@ onBeforeUnmount(() => {
     editorStore.canvas.off('object:removed', throttledGetList)
     editorStore.canvas.off('object:modified', throttledGetList)
   }
+  // 移除 editor 的事件监听
+  if (editorStore.editor) {
+    editorStore.editor.off('layer:order:changed', throttledGetList)
+  }
   // 取消待执行的节流函数
   throttledGetList.cancel()
   // 清理所有缓存和状态
@@ -316,21 +370,35 @@ onBeforeUnmount(() => {
 <template>
   <div class="layer-container">
     <div class="layer-box">
-      <div v-for="item in list" @click="select(item.id)" :key="item.id">
-        <div class="thumbnail-wrapper mb-2" :class="isSelect(item) && 'active'">
-          <img
-            v-if="item.thumbnail"
-            :src="item.thumbnail"
-            class="layer-thumbnail"
-            loading="lazy"
-            decoding="async"
-          />
-          <div v-else class="thumbnail-placeholder">
-            <i :class="iconType(item.type)" />
+      <Draggable
+        v-model="list"
+        item-key="id"
+        animation="200"
+        @end="handleDragEnd"
+        handle=".thumbnail-wrapper"
+        :disabled="false"
+        ghost-class="layer-ghost"
+        chosen-class="layer-chosen"
+        drag-class="layer-drag"
+      >
+        <template #item="{ element: item }">
+          <div @click="select(item.id)" :key="item.id">
+            <div class="thumbnail-wrapper mb-2" :class="isSelect(item) && 'active'">
+              <img
+                v-if="item.thumbnail"
+                :src="item.thumbnail"
+                class="layer-thumbnail"
+                loading="lazy"
+                decoding="async"
+              />
+              <div v-else class="thumbnail-placeholder">
+                <i :class="iconType(item.type)" />
+              </div>
+              <LockKeyhole v-show="item.isLock" :size="12" class="absolute right-1 bottom-1" />
+            </div>
           </div>
-          <LockKeyhole v-show="item.isLock" :size="12" class="absolute right-1 bottom-1" />
-        </div>
-      </div>
+        </template>
+      </Draggable>
     </div>
   </div>
 </template>
@@ -410,5 +478,21 @@ onBeforeUnmount(() => {
 
 .active {
   border: 2px solid #00cae0;
+}
+
+// 拖拽相关样式
+.layer-ghost {
+  opacity: 0.4;
+  background: #c8ebfb;
+}
+
+.layer-chosen {
+  cursor: move;
+}
+
+.layer-drag {
+  opacity: 0.8;
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
 }
 </style>
