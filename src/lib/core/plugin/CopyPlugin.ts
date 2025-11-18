@@ -75,6 +75,16 @@ class CopyPlugin implements IPluginTempl {
     }, keys);
   }
 
+  // 复制到缓存（不立即克隆）
+  copyToCache() {
+    const activeObject = this.canvas.getActiveObject();
+    if (activeObject) {
+      this.cache = activeObject;
+      // 清空剪切板
+      navigator.clipboard.writeText('');
+    }
+  }
+
   // 复制元素
   clone(paramsActiveObeject?: fabric.ActiveSelection | fabric.Object) {
     const activeObject = paramsActiveObeject || this.canvas.getActiveObject();
@@ -106,9 +116,29 @@ class CopyPlugin implements IPluginTempl {
 
   contextMenu() {
     const activeObject = this.canvas.getActiveObject();
+    const menu = [];
+    
+    // 有选中对象时显示"复制"菜单
     if (activeObject) {
-      return [{ text: '复制', hotkey: 'Ctrl+V', disabled: false, onclick: () => this.clone() }];
+      menu.push({ 
+        text: '复制', 
+        hotkey: 'Ctrl+C', 
+        disabled: false, 
+        onclick: () => this.copyToCache() 
+      });
     }
+    
+    // 有缓存时显示"粘贴"菜单
+    if (this.cache) {
+      menu.push({ 
+        text: '粘贴', 
+        hotkey: 'Ctrl+V', 
+        disabled: false, 
+        onclick: () => this.clone(this.cache) 
+      });
+    }
+    
+    return menu.length > 0 ? menu : undefined;
   }
 
   destroy() {
