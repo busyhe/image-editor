@@ -267,7 +267,6 @@ export const useTemplateStore = defineStore({
       }
 
       this.templateList[this.curTempIdx] = updatedTemplate
-      this.updateThumbnail()
     },
   },
 })

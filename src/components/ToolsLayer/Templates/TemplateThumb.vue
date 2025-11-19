@@ -18,6 +18,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch, onUnmounted } from 'vue'
 import { fabric } from 'fabric'
+import { debounce } from 'lodash-es'
 import type { Template } from '@/types/template'
 import { useTemplateStore } from '@/stores/modules/template'
 
@@ -70,6 +71,10 @@ onUnmounted(() => {
   if (thumbCanvas) {
     thumbCanvas.dispose()
   }
+  // 从 store 中移除
+  templateStore.templateCanvas.delete(props.template.id)
+  // 取消未执行的更新
+  setThumbnailElement.cancel()
 })
 
 // 监听模板变化
@@ -97,7 +102,7 @@ watch(
   },
 )
 
-const setThumbnailElement = async () => {
+const setThumbnailElement = debounce(async () => {
   if (!thumbCanvas) return
 
   try {
@@ -133,7 +138,7 @@ const setThumbnailElement = async () => {
   } catch (error) {
     console.error('设置缩略图失败:', error)
   }
-}
+}, 300)
 </script>
 
 <style lang="scss" scoped>
