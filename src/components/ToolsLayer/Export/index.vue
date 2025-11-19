@@ -9,9 +9,12 @@ const cbMap = {
   saveImg() {
     editorStore.editor.saveImg()
   },
+  saveJson() {
+    editorStore.editor.saveJson()
+  },
 }
 
-const saveWith = debounce(function (type) {
+const saveWith = debounce(function (type: keyof typeof cbMap) {
   cbMap[type] && typeof cbMap[type] === 'function' && cbMap[type]()
 }, 300)
 </script>
@@ -26,7 +29,7 @@ const saveWith = debounce(function (type) {
         <el-dropdown-menu>
           <el-dropdown-item>保存到项目</el-dropdown-item>
           <el-dropdown-item command="saveImg" divided>下载 png 图片</el-dropdown-item>
-          <el-dropdown-item>保存 JSON 数据</el-dropdown-item>
+          <el-dropdown-item command="saveJson">保存 JSON 数据</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
