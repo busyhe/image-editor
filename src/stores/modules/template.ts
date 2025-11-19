@@ -10,6 +10,7 @@ interface IState {
   templateList: Template[] // 所有的模板
   curTempIdx: number // 当前页面索引
   templateCanvas: Map<string, fabric.StaticCanvas> // 缩略图画布缓存
+  isLoading: boolean // 模板加载状态
 }
 
 const editorStore = useEditorStoreWithOut()
@@ -20,6 +21,7 @@ export const useTemplateStore = defineStore({
     templateList: [],
     curTempIdx: -1,
     templateCanvas: new Map(),
+    isLoading: false,
   }),
   getters: {
     curTemplate: (state) => state.templateList[state.curTempIdx] as Template,
@@ -48,7 +50,16 @@ export const useTemplateStore = defineStore({
       if (index === this.curTempIdx) return
 
       this.curTempIdx = index
-      await this.renderTemplate()
+      this.isLoading = true
+
+      // 延迟执行渲染，确保 loading 状态能被渲染出来
+      await new Promise((resolve) => setTimeout(resolve, 50))
+
+      try {
+        await this.renderTemplate()
+      } finally {
+        this.isLoading = false
+      }
     },
 
     // 添加模板

@@ -52,6 +52,9 @@ declare module 'vue' {
     Title: typeof import('./src/components/ToolsLayer/Title/index.vue')['default']
     ToolsLayer: typeof import('./src/components/ToolsLayer/index.vue')['default']
   }
+  export interface GlobalDirectives {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
+  }
 }
 
 // For TSX support
