@@ -47,7 +47,6 @@ const getObjectAttr = (e?: any) => {
   const activeObject = editorStore.canvas?.getActiveObject()
   // 只在fabric事件中检查是否是当前obj，DOM事件不检查
   if (e && e.target && typeof e.target.get === 'function' && e.target !== activeObject) return
-  console.debug('[DEBUG__AttributePosition/index.vue-activeObject]', activeObject)
 
   if (activeObject && isMatchType) {
     baseAttr.opacity = (activeObject.get('opacity') ?? 0) * 100
@@ -134,7 +133,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div>
+  <div class="inline-block">
     <el-popover placement="bottom" :width="400" trigger="hover" @show="getObjectAttr">
       <template #reference>
         <el-button title="排列">

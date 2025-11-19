@@ -13,6 +13,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ActionTools: typeof import('./src/components/ToolsLayer/ActionTools/index.vue')['default']
+    AttributeFont: typeof import('./src/components/ToolsLayer/ActionTools/AttributeFont/index.vue')['default']
     AttributePosition: typeof import('./src/components/ToolsLayer/ActionTools/AttributePosition/index.vue')['default']
     AttributePostion: typeof import('./src/components/ToolsLayer/ActionTools/AttributePostion.vue')['default']
     CanvasList: typeof import('./src/components/ToolsLayer/CanvasList/index.vue')['default']
@@ -33,9 +34,11 @@ declare module 'vue' {
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
+    ElOption: typeof import('element-plus/es')['ElOption']
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElProgress: typeof import('element-plus/es')['ElProgress']
     ElRow: typeof import('element-plus/es')['ElRow']
+    ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSlider: typeof import('element-plus/es')['ElSlider']
     ElSpace: typeof import('element-plus/es')['ElSpace']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
@@ -67,6 +70,7 @@ declare module 'vue' {
 // For TSX support
 declare global {
   const ActionTools: typeof import('./src/components/ToolsLayer/ActionTools/index.vue')['default']
+  const AttributeFont: typeof import('./src/components/ToolsLayer/ActionTools/AttributeFont/index.vue')['default']
   const AttributePosition: typeof import('./src/components/ToolsLayer/ActionTools/AttributePosition/index.vue')['default']
   const AttributePostion: typeof import('./src/components/ToolsLayer/ActionTools/AttributePostion.vue')['default']
   const CanvasList: typeof import('./src/components/ToolsLayer/CanvasList/index.vue')['default']
@@ -87,9 +91,11 @@ declare global {
   const ElMain: typeof import('element-plus/es')['ElMain']
   const ElMenu: typeof import('element-plus/es')['ElMenu']
   const ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
+  const ElOption: typeof import('element-plus/es')['ElOption']
   const ElPopover: typeof import('element-plus/es')['ElPopover']
   const ElProgress: typeof import('element-plus/es')['ElProgress']
   const ElRow: typeof import('element-plus/es')['ElRow']
+  const ElSelect: typeof import('element-plus/es')['ElSelect']
   const ElSlider: typeof import('element-plus/es')['ElSlider']
   const ElSpace: typeof import('element-plus/es')['ElSpace']
   const ElSwitch: typeof import('element-plus/es')['ElSwitch']

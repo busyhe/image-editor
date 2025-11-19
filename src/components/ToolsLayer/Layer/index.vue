@@ -273,7 +273,6 @@ const processThumbnailQueue = () => {
 
 // 快速更新列表结构（不生成缩略图）
 const getList = () => {
-  console.debug('[DEBUG__layer/index.vue-getList]')
   const objects =
     editorStore.canvas?.getObjects().filter((item: any) => {
       return !(item instanceof fabric.GuideLine || item.id === 'workspace')
@@ -371,7 +370,6 @@ watch(
     }
     // 添加新 canvas 的事件监听
     if (newCanvas) {
-      console.debug('[DEBUG__layer/index.vue] Canvas initialized, adding event listeners')
       // 只监听关键事件，而不是 after:render
       newCanvas.on('object:added', throttledGetList)
       newCanvas.on('object:removed', throttledGetList)

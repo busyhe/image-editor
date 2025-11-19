@@ -17,6 +17,7 @@ import Editor, {
   CopyPlugin,
   MoveHotKeyPlugin,
   FlipPlugin,
+  FontPlugin,
   DeleteHotKeyPlugin,
   ControlsRotatePlugin,
   GroupPlugin,
@@ -30,12 +31,11 @@ import Editor, {
 import { useEditorStore } from '@/stores/modules/editor'
 import { useTemplateStore } from '@/stores/modules/template'
 
+const editorStore = useEditorStore()
+const templateStore = useTemplateStore()
 const canvasEditor = new Editor()
 
 onMounted(async () => {
-  const editorStore = useEditorStore()
-  const templateStore = useTemplateStore()
-
   // 初始化fabric
   const canvas = new fabric.Canvas('canvas', {
     fireRightClick: true, // 启用右键，button的数字为3
@@ -59,6 +59,7 @@ onMounted(async () => {
   canvasEditor.use(CopyPlugin)
   canvasEditor.use(MoveHotKeyPlugin)
   canvasEditor.use(FlipPlugin)
+  canvasEditor.use(FontPlugin, { repoSrc: 'https://api.kuaitu.cc' })
   canvasEditor.use(DeleteHotKeyPlugin)
   canvasEditor.use(ControlsRotatePlugin)
   canvasEditor.use(GroupPlugin)

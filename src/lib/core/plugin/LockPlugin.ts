@@ -199,7 +199,6 @@ export default class LockPlugin implements IPluginTempl {
 
   contextMenu() {
     const selectedMode = this.editor.getSelectMode()
-    console.debug('[DEBUG__plugin/LockPlugin.ts-selectedMode]', selectedMode)
     const activeObject = this.canvas.getActiveObject()
     if (selectedMode === SelectMode.ONE && activeObject) {
       if (activeObject.selectable) {
