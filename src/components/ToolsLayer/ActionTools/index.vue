@@ -245,7 +245,7 @@ onDeactivated(() => {
           <el-dropdown-item :command="panels.shape">
             <Shapes :size="16" class="mr-2" />形状
           </el-dropdown-item>
-          <el-dropdown-item :command="panels.upload"
+          <el-dropdown-item :command="panels.material"
             ><Image :size="16" class="mr-2" />上传</el-dropdown-item
           >
         </el-dropdown-menu>

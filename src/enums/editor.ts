@@ -15,7 +15,7 @@ export enum editorTabs {
 
 export enum panels {
   text = 'TEXT',
-  image = 'IMAGE',
+  material = 'MATERIAL',
   shape = 'SHAPE',
   upload = 'UPLOAD',
 }

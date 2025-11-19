@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia'
 import { panels } from '@/enums/editor'
 import TextPanel from './TextPanel/index.vue'
 import ShapePanel from './ShapePanel/index.vue'
+import MaterialPanel from './MaterialPanel/index.vue'
 
 const editorStore = useEditorStore()
 const { showPanel, panelType } = storeToRefs(editorStore)
@@ -16,8 +17,8 @@ const panelTitle = computed(() => {
       return '文本'
     case panels.shape:
       return '形状'
-    case panels.upload:
-      return '上传'
+    case panels.material:
+      return '素材'
     default:
       return ''
   }
@@ -41,6 +42,7 @@ const closePanel = () => {
       <div class="panel-content flex-1 overflow-y-auto p-4">
         <TextPanel v-if="panelType === panels.text" />
         <ShapePanel v-if="panelType === panels.shape" />
+        <MaterialPanel v-if="panelType === panels.material" />
       </div>
     </div>
   </div>
