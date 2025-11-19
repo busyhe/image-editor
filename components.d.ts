@@ -14,6 +14,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     ActionTools: typeof import('./src/components/ToolsLayer/ActionTools/index.vue')['default']
     AttributeFont: typeof import('./src/components/ToolsLayer/ActionTools/AttributeFont/index.vue')['default']
+    AttributeImage: typeof import('./src/components/ToolsLayer/ActionTools/AttributeImage/index.vue')['default']
     AttributePosition: typeof import('./src/components/ToolsLayer/ActionTools/AttributePosition/index.vue')['default']
     AttributePostion: typeof import('./src/components/ToolsLayer/ActionTools/AttributePostion.vue')['default']
     CanvasList: typeof import('./src/components/ToolsLayer/CanvasList/index.vue')['default']
@@ -71,6 +72,7 @@ declare module 'vue' {
 declare global {
   const ActionTools: typeof import('./src/components/ToolsLayer/ActionTools/index.vue')['default']
   const AttributeFont: typeof import('./src/components/ToolsLayer/ActionTools/AttributeFont/index.vue')['default']
+  const AttributeImage: typeof import('./src/components/ToolsLayer/ActionTools/AttributeImage/index.vue')['default']
   const AttributePosition: typeof import('./src/components/ToolsLayer/ActionTools/AttributePosition/index.vue')['default']
   const AttributePostion: typeof import('./src/components/ToolsLayer/ActionTools/AttributePostion.vue')['default']
   const CanvasList: typeof import('./src/components/ToolsLayer/CanvasList/index.vue')['default']

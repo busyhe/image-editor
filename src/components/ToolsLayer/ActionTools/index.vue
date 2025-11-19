@@ -19,6 +19,8 @@ import { getPolygonVertices } from '@/utils/math'
 import { storeToRefs } from 'pinia'
 import AttributePosition from './AttributePosition/index.vue'
 import AttributeFont from './AttributeFont/index.vue'
+import AttributeImage from './AttributeImage/index.vue'
+
 import useSelect from '@/hooks/select'
 
 const editorStore = useEditorStore()
@@ -288,6 +290,7 @@ onDeactivated(() => {
 
     <div v-show="mixinState.mSelectMode === 'one'">
       <AttributeFont />
+      <AttributeImage />
       <AttributePosition />
     </div>
   </div>
