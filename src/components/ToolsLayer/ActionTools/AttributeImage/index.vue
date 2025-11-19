@@ -5,6 +5,7 @@ import { fabric } from 'fabric'
 import useSelect from '@/hooks/select'
 import { useEditorStore } from '@/stores/modules/editor'
 import { Utils } from '@/lib/core'
+import { ElMessage } from 'element-plus'
 
 interface IExtendImage {
   [x: string]: any
@@ -136,27 +137,81 @@ const mockGetResult = () => {
 }
 
 const handleLayering = async () => {
+  if (editorStore.isLayering) {
+    ElMessage.warning('Only one layer can be parsed at a time.')
+    return
+  }
+
   const activeObject = getActiveObject()
   if (!activeObject) return
 
-  // Canvas Loading Indicator
   const canvas = editorStore.canvas
   if (!canvas) return
 
-  const loadingText = new fabric.Text('Loading...', {
-    left: activeObject.left,
-    top: activeObject.top,
-    originX: 'center',
-    originY: 'center',
-    fontSize: 20,
-    fill: 'white',
-    backgroundColor: 'rgba(0,0,0,0.7)',
+  // Lock the object
+  activeObject.set({
+    lockMovementX: true,
+    lockMovementY: true,
+    lockRotation: true,
+    lockScalingX: true,
+    lockScalingY: true,
     selectable: false,
     evented: false,
   })
 
+  // Create Overlay
+  // Copy transform from activeObject to overlayRect to ensure exact match
+  const overlayRect = new fabric.Rect({
+    left: activeObject.left,
+    top: activeObject.top,
+    width: activeObject.width,
+    height: activeObject.height,
+    scaleX: activeObject.scaleX,
+    scaleY: activeObject.scaleY,
+    angle: activeObject.angle,
+    skewX: activeObject.skewX,
+    skewY: activeObject.skewY,
+    flipX: activeObject.flipX,
+    flipY: activeObject.flipY,
+    originX: activeObject.originX,
+    originY: activeObject.originY,
+    fill: 'rgba(255, 255, 255, 0.8)',
+    selectable: false,
+    evented: false,
+    excludeFromExport: true,
+  })
+
+  const center = activeObject.getCenterPoint()
+  const loadingText = new fabric.Text('Loading...', {
+    left: center.x,
+    top: center.y,
+    originX: 'center',
+    originY: 'center',
+    fontSize: 20,
+    fill: '#333',
+    selectable: false,
+    evented: false,
+    excludeFromExport: true,
+  })
+
+  // Group needs correct positioning if created from objects
+  // But creating a group from existing objects on canvas vs new objects
+  // If we just add rect and text separately, it's easier to manage z-index?
+  // But we want to remove them together.
+  // Let's just add them to a group and position the group?
+  // No, if we add them to a group, their coordinates become relative to the group center.
+  // It's easier to just add them as a group but we need to calculate group position.
+
+  // Alternative: Add them separately to canvas and track them.
+  // Let's try adding them separately to be safe about positioning.
+
+  canvas.add(overlayRect)
   canvas.add(loadingText)
   canvas.requestRenderAll()
+
+  // Use direct assignment to avoid potential action missing error
+  editorStore.isLayering = true
+  loading.value = true
 
   try {
     const taskId = await mockStartTask()
@@ -244,7 +299,7 @@ const handleLayering = async () => {
           originY: obj.originY,
           fontSize: obj.fontSize,
           fontFamily: obj.fontFamily,
-          fontWeight: obj.fontWeight,
+          fontWeight: 'bold',
           fontStyle: obj.fontStyle as any,
           textAlign: obj.textAlign,
           lineHeight: obj.lineHeight,
@@ -253,85 +308,27 @@ const handleLayering = async () => {
       }
 
       if (fabricObj) {
-        // Adjust origin to center for Group calculation later?
-        // The JSON has originX: 'left', originY: 'top'.
-        // We keep them as is for now, and will adjust when grouping.
         newObjects.push(fabricObj)
       }
     }
 
     if (newObjects.length > 0) {
-      // Create a group of the new objects
-      // The objects are currently positioned relative to (0,0) of the "virtual" original image space.
-      // We need to center this group around the center of the original image content.
-
-      // 1. Calculate the bounding box of the new objects?
-      // Or assume the "virtual space" matches the original image size?
-      // The JSON background rect is 1024x1024.
-      // If the original image is different, we might need to scale.
-      // For this mock, let's assume we just group them.
-
       const group = new fabric.Group(newObjects, {
         originX: 'center',
         originY: 'center',
       })
 
-      // The group's center (0,0 inside group) will be the center of the bounding box of all objects.
-      // We need to position this Group such that it aligns with the ActiveObject.
-
-      // Strategy:
-      // 1. Create group.
-      // 2. Set group transform to match activeObject.
-      // BUT: The internal relative positions of objects in the group matter.
-      // If the JSON coordinates are (0,0) based, and we want (0,0) to be the top-left of the activeObject.
-
-      // Let's try:
-      // 1. Find the center of the "virtual canvas" (e.g. 1024/2 = 512).
-      // 2. Shift all objects so their coordinates are relative to that center.
-      // OR: Use fabric.Group to auto-calculate.
-
-      // If we just do `new fabric.Group(newObjects)`, Fabric calculates the width/height and center.
-      // We want the Top-Left of this Group (unrotated) to match the Top-Left of the ActiveObject (unrotated).
-
-      // Let's calculate the center of the original image in its own coordinate space.
-      // width/2, height/2.
-
-      // We want to place the group at the ActiveObject's center.
       const center = activeObject.getCenterPoint()
 
       group.set({
         left: center.x,
         top: center.y,
         angle: activeObject.angle,
-        scaleX: activeObject.scaleX, // Assuming 1:1 mapping for now, or we might need to adjust scale if pixel density differs
+        scaleX: activeObject.scaleX,
         scaleY: activeObject.scaleY,
         originX: 'center',
         originY: 'center',
       })
-
-      // If the JSON content (1024x1024) is different size than the original image's natural size,
-      // we might need to adjust scale.
-      // For this mock, let's assume the JSON *is* the decomposition of the image, so it should match.
-      // If naturalWidth is 1024, then scale is 1.
-      // If naturalWidth is 500, and JSON is 1024, we might need to scale down the group?
-      // Let's compute a scale factor.
-
-      // Find the "background" object or use the max bounds?
-      // The JSON has a background rect 1024x1024.
-      // Let's assume the JSON canvas size corresponds to naturalWidth/Height.
-      // But the JSON has explicit 1024.
-      // If naturalWidth != 1024, we should scale the group.
-
-      // Actually, simpler:
-      // We replaced the content. If the content is larger/smaller, we should probably scale it to fit the original visual bounds?
-      // Or just respect the original scaleX/scaleY.
-      // If I have a 100x100 image displayed at 200x200 (scale=2).
-      // And I replace it with 100x100 content. Scale=2 works.
-      // If I replace it with 1000x1000 content. Scale=2 makes it 2000x2000.
-      // So we need to adjust scale.
-
-      // Let's calculate scale factor based on the first object (Background) or overall bounds?
-      // Let's use the group's width/height.
 
       const scaleX = (activeObject.width! * activeObject.scaleX!) / group.width!
       const scaleY = (activeObject.height! * activeObject.scaleY!) / group.height!
@@ -352,9 +349,22 @@ const handleLayering = async () => {
     }
   } catch (e) {
     console.error('Layering failed:', e)
+    // Unlock if failed
+    activeObject.set({
+      lockMovementX: false,
+      lockMovementY: false,
+      lockRotation: false,
+      lockScalingX: false,
+      lockScalingY: false,
+      selectable: true,
+      evented: true,
+    })
   } finally {
+    canvas.remove(overlayRect)
     canvas.remove(loadingText)
     canvas.requestRenderAll()
+    editorStore.isLayering = false
+    loading.value = false
   }
 }
 
