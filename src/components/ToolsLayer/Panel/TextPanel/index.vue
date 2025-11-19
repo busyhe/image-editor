@@ -56,7 +56,7 @@ onMounted(() => {})
 </template>
 
 <style lang="scss" scoped>
-::v-deep .el-button + .el-button {
+:deep(.el-button + .el-button) {
   margin-left: 0;
 }
 </style>

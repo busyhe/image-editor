@@ -55,7 +55,7 @@ onMounted(async () => {
   canvasEditor.use(HistoryPlugin as any)
   canvasEditor.use(LayerPlugin)
   canvasEditor.use(RulerPlugin)
-  canvasEditor.use(WorkspacePlugin)
+  canvasEditor.use(WorkspacePlugin, { width: 1080, height: 1920 })
   canvasEditor.use(CopyPlugin)
   canvasEditor.use(MoveHotKeyPlugin)
   canvasEditor.use(FlipPlugin)
@@ -77,8 +77,8 @@ onMounted(async () => {
     const { v4: uuidv4 } = await import('uuid')
     const defaultTemplate = {
       id: uuidv4(),
-      width: 900,
-      height: 2000,
+      width: 1080,
+      height: 1920,
       zoom: 1,
       objects: [
         {
@@ -86,8 +86,8 @@ onMounted(async () => {
           id: 'workspace',
           left: 0,
           top: 0,
-          width: 900,
-          height: 2000,
+          width: 1080,
+          height: 1920,
           fill: 'transparent',
           selectable: false,
           hasControls: false,
@@ -96,8 +96,8 @@ onMounted(async () => {
       ],
       backgroundColor: '#ffffff',
       workSpace: {
-        width: 900,
-        height: 2000,
+        width: 1080,
+        height: 1920,
         fill: '#ffffff',
         fillType: 0,
       },

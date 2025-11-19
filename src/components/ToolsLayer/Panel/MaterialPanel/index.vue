@@ -212,7 +212,7 @@ const addImageToCanvas = (item: UploadFile) => {
 </template>
 
 <style lang="scss" scoped>
-::v-deep .el-menu--horizontal {
+:deep(.el-menu--horizontal) {
   height: 40px;
   border-bottom: 1px solid #e5e7eb;
 
@@ -234,7 +234,7 @@ const addImageToCanvas = (item: UploadFile) => {
   }
 }
 
-::v-deep .el-upload {
+:deep(.el-upload) {
   width: 100%;
 
   .el-upload-dragger {

@@ -1,10 +1,3 @@
-/*
- * @Author: 秦少卫
- * @Date: 2023-02-03 23:29:34
- * @LastEditors: June
- * @LastEditTime: 2024-11-02 22:19:36
- * @Description: 核心入口文件
- */
 import Editor from './Editor'
 // 对齐辅助线插件 - 对齐辅助线对象
 export { default as AlignGuidLinePlugin } from './plugin/AlignGuidLinePlugin'

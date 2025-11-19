@@ -26,11 +26,12 @@ class WorkspacePlugin implements IPluginTempl {
   constructor(
     public canvas: fabric.Canvas,
     public editor: IEditor,
+    options: { width?: number; height?: number } = {},
   ) {
     this.workspace = null
     this.init({
-      width: 900,
-      height: 2000,
+      width: options.width || 900,
+      height: options.height || 2000,
     })
     this.zoomRatio = 0.75
   }

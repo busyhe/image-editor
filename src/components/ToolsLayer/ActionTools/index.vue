@@ -292,7 +292,7 @@ onDeactivated(() => {
 </template>
 
 <style lang="scss" scoped>
-::v-deep .el-button:focus-visible {
+:deep(.el-button:focus-visible) {
   outline: none;
 }
 </style>
