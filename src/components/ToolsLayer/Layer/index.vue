@@ -367,6 +367,7 @@ watch(
     // 移除旧 editor 的事件监听
     if (editorStore.editor) {
       editorStore.editor.off('layer:order:changed', throttledGetList)
+      editorStore.editor.off('layering-complete', throttledGetList)
     }
     // 添加新 canvas 的事件监听
     if (newCanvas) {
@@ -376,6 +377,8 @@ watch(
       newCanvas.on('object:modified', throttledGetList)
       // 监听图层顺序变化事件
       editorStore.editor?.on('layer:order:changed', throttledGetList)
+      // 监听图层分层完成事件
+      editorStore.editor?.on('layering-complete', throttledGetList)
       // 首次加载立即执行
       getList()
     }
@@ -393,6 +396,7 @@ onBeforeUnmount(() => {
   // 移除 editor 的事件监听
   if (editorStore.editor) {
     editorStore.editor.off('layer:order:changed', throttledGetList)
+    editorStore.editor.off('layering-complete', throttledGetList)
   }
   // 取消待执行的节流函数
   throttledGetList.cancel()

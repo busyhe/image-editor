@@ -266,7 +266,7 @@ const handleLayering = async () => {
             top: obj.top,
             width: obj.width,
             height: obj.height,
-            // Copy other properties if needed
+            id: obj.id,
           })
         }
       } else if (obj.type === 'rect') {
@@ -279,6 +279,7 @@ const handleLayering = async () => {
           stroke: obj.stroke || undefined,
           strokeWidth: obj.strokeWidth,
           opacity: obj.opacity,
+          id: obj.id,
         })
       } else if (obj.type === 'textbox') {
         fabricObj = new fabric.Textbox(obj.text || '', {
@@ -304,6 +305,7 @@ const handleLayering = async () => {
           textAlign: obj.textAlign,
           lineHeight: obj.lineHeight,
           charSpacing: obj.charSpacing,
+          id: obj.id,
         })
       }
 
