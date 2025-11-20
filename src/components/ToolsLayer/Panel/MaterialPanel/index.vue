@@ -2,6 +2,7 @@
 import { ref, inject, onMounted, watch } from 'vue'
 import { Search } from 'lucide-vue-next'
 import { fabric } from 'fabric'
+import { v4 as uuid } from 'uuid'
 
 const activeIndex = ref('deliver')
 const canvasEditor = inject('canvasEditor') as any
@@ -70,6 +71,7 @@ const addToCanvas = (item: any) => {
     item.url,
     (img) => {
       img.set({
+        id: uuid(),
         left: 100,
         top: 100,
       })
