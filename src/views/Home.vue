@@ -30,6 +30,7 @@ import Editor, {
 } from '@/lib/core'
 import { useEditorStore } from '@/stores/modules/editor'
 import { useTemplateStore } from '@/stores/modules/template'
+import { useTaskInit } from '@/hooks/useTaskInit'
 
 const editorStore = useEditorStore()
 const templateStore = useTemplateStore()
@@ -73,8 +74,12 @@ onMounted(async () => {
   editorStore.setEditor(canvasEditor)
   editorStore.setCanvas(canvas)
 
-  // 初始化默认模板（如果没有模板）
-  if (templateStore.templateList.length === 0) {
+  // 尝试从 URL code 初始化
+  const { init: initTask } = useTaskInit()
+  const isTaskInit = await initTask()
+
+  // 初始化默认模板（如果没有模板且不是任务初始化）
+  if (!isTaskInit && templateStore.templateList.length === 0) {
     const { v4: uuidv4 } = await import('uuid')
     const defaultTemplate = {
       id: uuidv4(),
