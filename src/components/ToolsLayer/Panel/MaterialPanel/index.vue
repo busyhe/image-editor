@@ -1,82 +1,71 @@
 <script setup lang="ts">
-import { ref, inject } from 'vue'
-import { Upload, Image as ImageIcon } from 'lucide-vue-next'
-import { v4 as uuidv4 } from 'uuid'
+import { ref, inject, onMounted, watch } from 'vue'
+import { Search } from 'lucide-vue-next'
 import { fabric } from 'fabric'
 
-const activeIndex = ref('material')
+const activeIndex = ref('deliver')
 const canvasEditor = inject('canvasEditor') as any
-
-interface UploadFile {
-  id: string
-  url: string
-  name: string
-  progress?: number
-  status: 'uploading' | 'done' | 'error'
-}
-
-const fileList = ref<UploadFile[]>([])
+const searchText = ref('')
 const loading = ref(false)
 const noMore = ref(false)
+const list = ref<any[]>([])
+const page = ref(1)
+const pageSize = 10
 
-const handleSelect = (key: string) => {
-  activeIndex.value = key
-}
-
-// 模拟上传请求
-const customUpload = (options: any) => {
-  const { file, onProgress, onSuccess } = options
-
-  // 创建预览 URL
-  const url = URL.createObjectURL(file)
-  const id = uuidv4()
-
-  // 添加到列表首位
-  const newFile: UploadFile = {
-    id,
-    url,
-    name: file.name,
-    progress: 0,
-    status: 'uploading',
+// Mock data generator
+const generateMockData = (page: number, type: string) => {
+  const data = []
+  const startId = (page - 1) * pageSize
+  for (let i = 0; i < pageSize; i++) {
+    const id = startId + i
+    // Using placeholder images for demo
+    const width = 300
+    const height = Math.floor(Math.random() * (400 - 200 + 1)) + 200 // Random height
+    data.push({
+      id,
+      url: `https://picsum.photos/${width}/${height}?random=${id}&type=${type}`,
+      title: `${type} Material ${id + 1}`,
+    })
   }
-
-  fileList.value.unshift(newFile)
-
-  // 模拟进度
-  let progress = 0
-  const timer = setInterval(() => {
-    progress += 10
-    if (progress <= 100) {
-      newFile.progress = progress
-      onProgress({ percent: progress })
-    } else {
-      clearInterval(timer)
-      newFile.status = 'done'
-      newFile.progress = undefined
-      onSuccess(newFile)
-    }
-  }, 200)
+  return data
 }
 
-// 加载更多
-const loadMore = () => {
+const loadData = async () => {
   if (loading.value || noMore.value) return
   loading.value = true
 
-  // 模拟加载更多数据
+  // Simulate API delay
   setTimeout(() => {
+    const newData = generateMockData(page.value, activeIndex.value)
+    list.value.push(...newData)
+    page.value++
     loading.value = false
-    // 这里可以添加更多模拟数据，或者设置 noMore = true
-    if (fileList.value.length > 50) {
+    if (page.value > 5) {
+      // Limit to 5 pages for mock
       noMore.value = true
     }
-  }, 1000)
+  }, 500)
 }
 
-// 添加图片到画布
-const addImageToCanvas = (item: UploadFile) => {
-  if (item.status !== 'done') return
+const handleSelect = (key: string) => {
+  if (activeIndex.value === key) return
+  activeIndex.value = key
+  // Reset list
+  list.value = []
+  page.value = 1
+  noMore.value = false
+  loadData()
+}
 
+const handleSearch = () => {
+  // In a real app, this would filter the query
+  list.value = []
+  page.value = 1
+  noMore.value = false
+  loadData()
+}
+
+const addToCanvas = (item: any) => {
   fabric.Image.fromURL(
     item.url,
     (img) => {
@@ -84,9 +73,9 @@ const addImageToCanvas = (item: UploadFile) => {
         left: 100,
         top: 100,
       })
-      // 调整图片大小以适应画布
-      if (img.width && img.width > 500) {
-        img.scaleToWidth(500)
+      // Scale down if too big
+      if (img.width && img.width > 300) {
+        img.scaleToWidth(300)
       }
       canvasEditor.canvas.add(img)
       canvasEditor.canvas.setActiveObject(img)
@@ -95,118 +84,79 @@ const addImageToCanvas = (item: UploadFile) => {
     { crossOrigin: 'anonymous' },
   )
 }
+
+onMounted(() => {
+  loadData()
+})
+
+watch(activeIndex, () => {
+  // handleSelect handles the logic, but if activeIndex changes externally
+})
 </script>
 
 <template>
-  <div class="material-panel h-full flex flex-col">
+  <div class="material-panel h-full flex flex-col bg-white">
+    <!-- Tabs -->
     <el-menu
       :default-active="activeIndex"
       mode="horizontal"
+      :ellipsis="false"
       @select="handleSelect"
-      class="flex-none"
+      class="border-b border-gray-200"
     >
-      <el-menu-item index="material">素材库</el-menu-item>
-      <el-menu-item index="upload">上传</el-menu-item>
+      <el-menu-item index="deliver">投放素材</el-menu-item>
+      <el-menu-item index="source">源素材</el-menu-item>
+      <el-menu-item index="inspiration">灵感素材</el-menu-item>
     </el-menu>
 
-    <div class="flex-1 overflow-hidden" v-if="activeIndex === 'upload'">
-      <div class="p-4 h-full flex flex-col">
-        <!-- 上传按钮区域 -->
-        <el-upload
-          class="upload-area w-full mb-4"
-          drag
-          action="#"
-          :http-request="customUpload"
-          :show-file-list="false"
-          accept="image/*"
-          multiple
-        >
-          <div class="flex flex-col items-center justify-center py-4">
-            <Upload class="w-8 h-8 text-gray-400 mb-2" />
-            <div class="text-sm text-gray-500">点击或拖拽上传图片</div>
-          </div>
-        </el-upload>
+    <!-- Search -->
+    <div class="p-4 pb-2">
+      <el-input
+        v-model="searchText"
+        placeholder="搜索素材"
+        :prefix-icon="Search"
+        clearable
+        @input="handleSearch"
+      />
+    </div>
 
-        <!-- 图片列表 -->
+    <!-- List -->
+    <div
+      class="flex-1 overflow-y-auto p-4 custom-scrollbar"
+      v-infinite-scroll="loadData"
+      :infinite-scroll-disabled="loading || noMore"
+      :infinite-scroll-distance="10"
+    >
+      <div class="grid grid-cols-2 gap-3">
         <div
-          class="image-list flex-1 overflow-y-auto"
-          v-infinite-scroll="loadMore"
-          :infinite-scroll-disabled="loading || noMore"
+          v-for="item in list"
+          :key="item.id"
+          class="material-item group relative rounded-lg overflow-hidden cursor-pointer bg-gray-50 border border-gray-100 hover:shadow-md transition-all"
+          @click="addToCanvas(item)"
         >
-          <div class="grid grid-cols-2 gap-3">
-            <div
-              v-for="item in fileList"
-              :key="item.id"
-              class="image-item relative group rounded-lg overflow-hidden border border-gray-200 bg-gray-50 cursor-pointer"
-              @click="addImageToCanvas(item)"
-            >
-              <!-- 上传中状态 -->
-              <div
-                v-if="item.status === 'uploading'"
-                class="aspect-square flex flex-col items-center justify-center p-2"
-              >
-                <div class="text-xs text-gray-500 mb-2 truncate w-full text-center">
-                  {{ item.name }}
-                </div>
-                <el-progress
-                  type="circle"
-                  :percentage="item.progress"
-                  :width="60"
-                  :stroke-width="4"
-                />
-                <div class="text-xs text-blue-500 mt-2">正在上传...</div>
-              </div>
-
-              <!-- 完成状态 -->
-              <div v-else class="aspect-square relative">
-                <el-image
-                  :src="item.url"
-                  fit="cover"
-                  class="w-full h-full transition-transform duration-300 group-hover:scale-110"
-                  loading="lazy"
-                >
-                  <template #error>
-                    <div
-                      class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400"
-                    >
-                      <ImageIcon class="w-6 h-6" />
-                    </div>
-                  </template>
-                </el-image>
-
-                <!-- 悬停遮罩 -->
-                <div
-                  class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center"
-                >
-                  <div
-                    class="opacity-0 group-hover:opacity-100 bg-white/90 px-2 py-1 rounded text-xs font-medium shadow-sm transform translate-y-2 group-hover:translate-y-0 transition-all duration-300"
-                  >
-                    点击添加
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div v-if="loading" class="text-center py-4 text-gray-400 text-xs">加载中...</div>
-          <div v-if="noMore && fileList.length > 0" class="text-center py-4 text-gray-400 text-xs">
-            没有更多了
-          </div>
-
-          <!-- 空状态 -->
+          <img
+            :src="item.url"
+            class="w-full h-auto object-cover block min-h-[100px]"
+            loading="lazy"
+            alt=""
+          />
           <div
-            v-if="fileList.length === 0"
-            class="flex flex-col items-center justify-center py-12 text-gray-400"
+            class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end p-2 opacity-0 group-hover:opacity-100"
           >
-            <ImageIcon class="w-12 h-12 mb-2 opacity-50" />
-            <div class="text-xs">暂无上传图片</div>
+            <span class="text-xs text-white bg-black/50 px-1.5 py-0.5 rounded truncate w-full">{{
+              item.title
+            }}</span>
           </div>
         </div>
       </div>
-    </div>
 
-    <div v-else class="flex-1 p-4 flex items-center justify-center text-gray-400">
-      素材库功能开发中...
+      <div v-if="loading" class="text-center py-4 text-gray-400 text-sm">加载中...</div>
+      <div v-if="noMore && list.length > 0" class="text-center py-4 text-gray-400 text-sm">
+        没有更多了
+      </div>
+      <div v-if="!loading && list.length === 0" class="text-center py-8 text-gray-400 text-sm">
+        暂无数据
+      </div>
     </div>
   </div>
 </template>
@@ -221,52 +171,27 @@ const addImageToCanvas = (item: UploadFile) => {
     line-height: 40px;
     border-bottom: 2px solid transparent;
     color: #666;
+    padding: 0 14px;
+    flex: 1;
+    justify-content: center;
 
     &.is-active {
+      color: var(--el-color-primary);
       border-bottom-color: var(--el-color-primary);
-      color: var(--el-color-primary);
-    }
-
-    &:hover {
-      color: var(--el-color-primary);
-      background-color: transparent;
     }
   }
 }
 
-:deep(.el-upload) {
-  width: 100%;
-
-  .el-upload-dragger {
-    width: 100%;
-    height: auto;
-    padding: 0;
-    border-color: #e5e7eb;
-    background-color: #f9fafb;
-
-    &:hover {
-      border-color: var(--el-color-primary);
-      background-color: #fff;
-    }
-  }
-}
-
-.image-list {
+.custom-scrollbar {
   &::-webkit-scrollbar {
     width: 4px;
   }
-
+  &::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 2px;
+  }
   &::-webkit-scrollbar-track {
     background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #e5e7eb;
-    border-radius: 2px;
-
-    &:hover {
-      background: #d1d5db;
-    }
   }
 }
 </style>

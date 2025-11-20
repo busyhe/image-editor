@@ -37,7 +37,19 @@ const closePanel = () => {
         class="panel-header flex items-center justify-between border-b border-[#DCDFE6] h-[48px] pl-4 pr-2 relative w-full z-1"
       >
         <span>{{ panelTitle }}</span>
-        <el-button text :icon="X" @click="closePanel" />
+        <div>
+          <el-upload
+            action="#"
+            class="inline-block mr-2"
+            :http-request="customUpload"
+            :show-file-list="false"
+            accept="image/*"
+            multiple
+          >
+            <el-button size="small">点击上传</el-button>
+          </el-upload>
+          <el-button text :icon="X" @click="closePanel" />
+        </div>
       </div>
       <div class="panel-content flex-1 overflow-y-auto p-4">
         <TextPanel v-if="panelType === panels.text" />
