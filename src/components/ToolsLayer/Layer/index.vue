@@ -406,11 +406,34 @@ onBeforeUnmount(() => {
   previousObjectsSnapshot.clear()
   isGenerating = false
 })
+
+// 自动滚动到选中图层
+const itemRefs = new Map<string, HTMLElement>()
+const setItemRef = (el: any, id: string) => {
+  if (el) {
+    itemRefs.set(id, el)
+  } else {
+    itemRefs.delete(id)
+  }
+}
+
+watch(
+  () => mixinState.mSelectId,
+  (newId) => {
+    if (!newId) return
+    nextTick(() => {
+      const el = itemRefs.get(newId)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    })
+  },
+)
 </script>
 
 <template>
   <div class="layer-container">
-    <div class="layer-box h-[calc(100vh-140px)] overflow-y-auto">
+    <div class="layer-box max-h-[calc(100vh-140px)] overflow-y-auto">
       <Draggable
         v-model="list"
         item-key="id"
@@ -424,7 +447,7 @@ onBeforeUnmount(() => {
         drag-class="layer-drag"
       >
         <template #item="{ element: item }">
-          <div @click="select(item.id)" :key="item.id">
+          <div @click="select(item.id)" :key="item.id" :ref="(el) => setItemRef(el, item.id)">
             <div class="thumbnail-wrapper mb-2" :class="isSelect(item) && 'active'">
               <img
                 v-if="item.thumbnail"
