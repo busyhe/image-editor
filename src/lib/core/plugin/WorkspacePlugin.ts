@@ -74,9 +74,11 @@ class WorkspacePlugin implements IPluginTempl {
   }
 
   // 初始化背景
-  _initBackground() {
+  _initBackground(resetColor = true) {
     this.canvas.backgroundImage = ''
-    this.canvas.setBackgroundColor('#ffffff', this.canvas.renderAll.bind(this.canvas))
+    if (resetColor) {
+      this.canvas.setBackgroundColor('#ffffff', this.canvas.renderAll.bind(this.canvas))
+    }
     this.canvas.setWidth(this.workspaceEl.offsetWidth)
     this.canvas.setHeight(this.workspaceEl.offsetHeight)
   }
@@ -140,7 +142,7 @@ class WorkspacePlugin implements IPluginTempl {
   }
 
   setSize(width: number, height: number) {
-    this._initBackground()
+    this._initBackground(false)
     this.option.width = width
     this.option.height = height
     // 重新设置workspace

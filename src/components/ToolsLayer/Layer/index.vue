@@ -410,7 +410,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="layer-container">
-    <div class="layer-box">
+    <div class="layer-box h-[calc(100vh-140px)] overflow-y-auto">
       <Draggable
         v-model="list"
         item-key="id"

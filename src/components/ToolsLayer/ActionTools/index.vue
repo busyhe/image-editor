@@ -23,9 +23,11 @@ import AttributeShape from './AttributeShape/index.vue'
 import AttributeImage from './AttributeImage/index.vue'
 import ColorPicker from './ColorPicker/index.vue'
 
+import { useTemplateStore } from '@/stores/modules/template'
 import useSelect from '@/hooks/select'
 
 const editorStore = useEditorStore()
+const templateStore = useTemplateStore()
 const { mixinState } = useSelect()
 const editor = computed(() => editorStore.editor)
 
@@ -181,6 +183,10 @@ function setColor(_color: string) {
   )
 
   color.value = _color
+
+  // Update template store
+  templateStore.updateTemplate({ backgroundColor: _color })
+  templateStore.updateThumbnail()
 }
 
 const handleSetSize = (command: number) => {
