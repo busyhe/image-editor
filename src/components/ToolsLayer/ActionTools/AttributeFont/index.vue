@@ -146,7 +146,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div v-if="isOne && isMatchType" class="inline-flex items-center gap-2">
+  <div v-if="isOne && isMatchType" class="inline-flex items-center">
     <el-select v-model="baseAttr.fontFamily" class="w-[120px]!" @change="changeFontFamily">
       <el-option
         v-for="item in fontsList"
