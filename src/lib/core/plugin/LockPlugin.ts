@@ -178,6 +178,7 @@ export default class LockPlugin implements IPluginTempl {
       this.controlCornersVisible(activeObject)
       this.canvas.renderAll()
       this.editor.emit(SelectEvent.ONE, [activeObject])
+      this.canvas.fire('object:modified', { target: activeObject })
     }
   }
 
@@ -194,6 +195,7 @@ export default class LockPlugin implements IPluginTempl {
       this.controlCornersVisible(activeObject)
       this.canvas.renderAll()
       this.editor.emit(SelectEvent.ONE, [activeObject])
+      this.canvas.fire('object:modified', { target: activeObject })
     }
   }
 

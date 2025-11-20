@@ -234,7 +234,7 @@ onDeactivated(() => {
 </script>
 
 <template>
-  <div class="flex justify-center gap-2">
+  <div class="flex justify-center items-center gap-2">
     <el-dropdown placement="bottom-end" @command="handleAddType">
       <el-button title="新增">
         <el-icon><Plus /></el-icon>
@@ -288,7 +288,7 @@ onDeactivated(() => {
       </el-dropdown>
     </div>
 
-    <div v-show="mixinState.mSelectMode === 'one'">
+    <div v-show="mixinState.mSelectMode === 'one'" class="flex gap-2">
       <AttributeFont />
       <AttributeImage />
       <AttributePosition />

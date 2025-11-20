@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, onBeforeUnmount, getCurrentInstance, watch } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 import { ElLoading } from 'element-plus'
+import { Bold, Italic, Underline } from 'lucide-vue-next'
 import useSelect from '@/hooks/select'
 import { useEditorStore } from '@/stores/modules/editor'
 
 const editorStore = useEditorStore()
 const { isMatchType, isOne } = useSelect(['text', 'i-text', 'textbox'])
-console.debug('[DEBUG__AttributeFont/index.vue-isMatchType]', isMatchType, isOne)
-const update = getCurrentInstance()
 
 const fontsList: any = ref([])
+const fontSizeList = [12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 36, 40, 48, 56, 64, 72]
 const baseAttr = reactive<Record<string, any>>({
   fontSize: 0,
   fontFamily: '',
@@ -22,6 +22,7 @@ const baseAttr = reactive<Record<string, any>>({
   underline: false,
   linethrough: false,
   overline: false,
+  fill: '',
 })
 
 // 属性获取
@@ -40,20 +41,21 @@ const getObjectAttr = (e?: any) => {
     baseAttr.fontStyle = activeObject.get('fontStyle')
     baseAttr.textBackgroundColor = activeObject.get('textBackgroundColor')
     baseAttr.fontWeight = activeObject.get('fontWeight')
+    baseAttr.fill = activeObject.get('fill')
   }
 }
 
 // 通用属性改变
 const changeCommon = (key: any, value: any) => {
-  const activeObject = editorStore.canvas?.getActiveObjects()[0]
+  const activeObject = editorStore.canvas?.getActiveObjects()[0] as any
   if (activeObject) {
-    activeObject && activeObject.set(key, value)
+    activeObject.set(key, value)
     editorStore.canvas?.renderAll()
   }
 }
 
 const selectCancel = () => {
-  update?.proxy?.$forceUpdate()
+  // update?.proxy?.$forceUpdate() // Removed as getCurrentInstance and update are not used
 }
 
 const changeFontFamily = async (fontName: string) => {
@@ -61,39 +63,51 @@ const changeFontFamily = async (fontName: string) => {
   const loadingINstasncdee = ElLoading.service()
   editorStore.editor.loadFont(fontName).finally(() => loadingINstasncdee.close())
 }
-const changeFontWeight = (key: any, value: any) => {
+const changeFontWeight = () => {
+  const value = baseAttr.fontWeight
   const nValue = value === 'normal' ? 'bold' : 'normal'
   baseAttr.fontWeight = nValue
-  const activeObject = editorStore.canvas?.getActiveObjects()[0]
-  activeObject && activeObject.set(key, nValue)
-  editorStore.canvas?.renderAll()
+  const activeObject = editorStore.canvas?.getActiveObjects()[0] as any
+  if (activeObject) {
+    activeObject.set('fontWeight', nValue)
+    editorStore.canvas?.renderAll()
+  }
 }
 
 // 斜体
-const changeFontStyle = (key: any, value: any) => {
+const changeFontStyle = () => {
+  const value = baseAttr.fontStyle
   const nValue = value === 'normal' ? 'italic' : 'normal'
   baseAttr.fontStyle = nValue
-  const activeObject = editorStore.canvas?.getActiveObjects()[0]
-  activeObject && activeObject.set(key, nValue)
-  editorStore.canvas?.renderAll()
+  const activeObject = editorStore.canvas?.getActiveObjects()[0] as any
+  if (activeObject) {
+    activeObject.set('fontStyle', nValue)
+    editorStore.canvas?.renderAll()
+  }
 }
 
 // 中划
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const changeLineThrough = (key: any, value: any) => {
   const nValue = value === false
   baseAttr.linethrough = nValue
-  const activeObject = editorStore.canvas?.getActiveObjects()[0]
-  activeObject && activeObject.set(key, nValue)
-  editorStore.canvas?.renderAll()
+  const activeObject = editorStore.canvas?.getActiveObjects()[0] as any
+  if (activeObject) {
+    activeObject.set(key, nValue)
+    editorStore.canvas?.renderAll()
+  }
 }
 
 // 下划
-const changeUnderline = (key: any, value: any) => {
-  const nValue = value === false
+const changeUnderline = () => {
+  const value = baseAttr.underline
+  const nValue = !value
   baseAttr.underline = nValue
-  const activeObject = editorStore.canvas?.getActiveObjects()[0]
-  activeObject && activeObject.set(key, nValue)
-  editorStore.canvas?.renderAll()
+  const activeObject = editorStore.canvas?.getActiveObjects()[0] as any
+  if (activeObject) {
+    activeObject.set('underline', nValue)
+    editorStore.canvas?.renderAll()
+  }
 }
 
 onMounted(() => {
@@ -131,8 +145,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div v-if="isOne && isMatchType" class="inline-block">
-    <el-select v-model="baseAttr.fontFamily" class="w-[100px]!" @change="changeFontFamily">
+  <div v-if="isOne && isMatchType" class="inline-flex items-center gap-2">
+    <el-select v-model="baseAttr.fontFamily" class="w-[120px]!" @change="changeFontFamily">
       <el-option
         v-for="item in fontsList"
         :value="item.name"
@@ -148,5 +162,39 @@ onBeforeUnmount(() => {
         </div>
       </el-option>
     </el-select>
+
+    <el-select
+      v-model="baseAttr.fontSize"
+      class="w-18!"
+      @change="(val: any) => changeCommon('fontSize', val)"
+    >
+      <el-option v-for="size in fontSizeList" :key="size" :label="size" :value="size" />
+    </el-select>
+
+    <el-button-group>
+      <el-button
+        :type="baseAttr.fontWeight === 'bold' ? 'primary' : ''"
+        @click="changeFontWeight"
+        plain
+      >
+        <Bold :size="16" />
+      </el-button>
+      <el-button
+        :type="baseAttr.fontStyle === 'italic' ? 'primary' : ''"
+        @click="changeFontStyle"
+        plain
+      >
+        <Italic :size="16" />
+      </el-button>
+      <el-button :type="baseAttr.underline ? 'primary' : ''" @click="changeUnderline" plain>
+        <Underline :size="16" />
+      </el-button>
+    </el-button-group>
+
+    <el-color-picker
+      v-model="baseAttr.fill"
+      show-alpha
+      @change="(val: any) => changeCommon('fill', val)"
+    />
   </div>
 </template>
