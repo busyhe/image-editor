@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 import { ElLoading } from 'element-plus'
-import { Bold, Italic, Underline } from 'lucide-vue-next'
+import { Bold, Italic, Underline, Baseline } from 'lucide-vue-next'
+import ColorPicker from '../ColorPicker/index.vue'
 import useSelect from '@/hooks/select'
 import { useEditorStore } from '@/stores/modules/editor'
 
@@ -191,10 +192,13 @@ onBeforeUnmount(() => {
       </el-button>
     </el-button-group>
 
-    <el-color-picker
-      v-model="baseAttr.fill"
-      show-alpha
-      @change="(val: any) => changeCommon('fill', val)"
-    />
+    <el-popover placement="bottom" trigger="click" width="auto">
+      <template #reference>
+        <el-button class="w-8! px-0!">
+          <Baseline :size="16" :style="{ color: baseAttr.fill }" />
+        </el-button>
+      </template>
+      <ColorPicker :model-value="baseAttr.fill" @change="(val: any) => changeCommon('fill', val)" />
+    </el-popover>
   </div>
 </template>

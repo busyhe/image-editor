@@ -19,7 +19,9 @@ import { getPolygonVertices } from '@/utils/math'
 import { storeToRefs } from 'pinia'
 import AttributePosition from './AttributePosition/index.vue'
 import AttributeFont from './AttributeFont/index.vue'
+import AttributeShape from './AttributeShape/index.vue'
 import AttributeImage from './AttributeImage/index.vue'
+import ColorPicker from './ColorPicker/index.vue'
 
 import useSelect from '@/hooks/select'
 
@@ -32,32 +34,7 @@ const { showPanel } = storeToRefs(editorStore)
 const curDrawType = ref<DrawTypes | ''>('')
 const isDrawingLineMode = ref(false)
 const defaultPosition = { shadow: '', fontFamily: 'arial' }
-const colorList = ref([
-  '#5F2B63',
-  '#B23554',
-  '#F27E56',
-  '#FCE766',
-  '#86DCCD',
-  '#E7FDCB',
-  '#FFDC84',
-  '#F57677',
-  '#5FC2C7',
-  '#98DFE5',
-  '#C2EFF3',
-  '#DDFDFD',
-  '#9EE9D3',
-  '#2FC6C8',
-  '#2D7A9D',
-  '#48466d',
-  '#61c0bf',
-  '#bbded6',
-  '#fae3d9',
-  '#ffb6b9',
-  '#ffaaa5',
-  '#ffd3b6',
-  '#dcedc1',
-  '#a8e6cf',
-])
+
 const color = ref('rgba(255, 255, 255, 1)')
 const sizeList = ref([
   {
@@ -256,22 +233,14 @@ onDeactivated(() => {
     </el-dropdown>
 
     <div v-show="!mixinState.mSelectMode">
-      <el-popover placement="bottom" trigger="hover">
+      <el-popover placement="bottom" trigger="hover" width="280">
         <template #reference>
           <el-button title="背景">
             <SquareDashed :size="16" />
           </el-button>
         </template>
 
-        <main class="palette-color-list flex flex-wrap gap-2">
-          <template v-for="(item, i) in colorList" :key="item + i">
-            <span
-              class="inline-block w-6 h-6 rounded-sm cursor-pointer"
-              :style="`background:${item}`"
-              @click="setColor(item)"
-            ></span>
-          </template>
-        </main>
+        <ColorPicker :model-value="color" @change="setColor" />
       </el-popover>
 
       <el-dropdown placement="bottom-start" @command="handleSetSize">
@@ -290,6 +259,7 @@ onDeactivated(() => {
 
     <div v-show="mixinState.mSelectMode === 'one'" class="flex gap-2">
       <AttributeFont />
+      <AttributeShape />
       <AttributeImage />
       <AttributePosition />
     </div>
