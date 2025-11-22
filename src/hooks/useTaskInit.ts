@@ -20,154 +20,104 @@ export function useTaskInit() {
     getDetail: async (code: string) => {
       console.log('Mock API: Getting detail for code', code)
       await new Promise((resolve) => setTimeout(resolve, 500))
+
+      // Return a project structure with multiple pages (templates)
       return {
-        taskId: 'mock-task-' + Date.now(),
-        // Using a placeholder image that is CORS-friendly or local if possible.
-        // For now using a placeholder service.
-        sourceImageUrl:
-          'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-      }
-    },
-    checkStatus: async (taskId: string) => {
-      console.log('Mock API: Checking status for', taskId)
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      // Randomly succeed after a few tries or immediately for demo
-      return {
-        status: 'SUCCESS',
-        data: {
-          version: '5.3.0',
-          objects: [
-            {
-              type: 'rect',
-              left: 0,
-              top: 0,
+        id: 'project-' + Date.now(),
+        name: 'Mock Project',
+        templates: [
+          {
+            id: 'page-1',
+            width: 1080,
+            height: 1920,
+            zoom: 1,
+            objects: [
+              {
+                type: 'rect',
+                left: 0,
+                top: 0,
+                width: 1080,
+                height: 1920,
+                fill: '#ffffff',
+                id: 'workspace',
+                selectable: false,
+                hasControls: false,
+              },
+              {
+                type: 'textbox',
+                left: 100,
+                top: 100,
+                width: 300,
+                fontSize: 40,
+                text: 'Page 1 Content',
+                fill: '#000000',
+                id: 'text-p1',
+              },
+            ],
+            workSpace: {
               width: 1080,
               height: 1920,
               fill: '#ffffff',
-              id: 'workspace',
-              selectable: false,
-              hasControls: false,
+              fillType: 0,
             },
-            {
-              type: 'image',
-              version: '5.3.0',
-              originX: 'left',
-              originY: 'top',
-              left: 100,
-              top: 100,
-              width: 300,
-              height: 300,
-              fill: 'rgb(0,0,0)',
-              stroke: null,
-              strokeWidth: 0,
-              strokeDashArray: null,
-              strokeLineCap: 'butt',
-              strokeDashOffset: 0,
-              strokeLineJoin: 'miter',
-              strokeUniform: false,
-              strokeMiterLimit: 4,
-              scaleX: 1,
-              scaleY: 1,
-              angle: 0,
-              flipX: false,
-              flipY: false,
-              opacity: 1,
-              shadow: null,
-              visible: true,
-              backgroundColor: '',
-              fillRule: 'nonzero',
-              paintFirst: 'fill',
-              globalCompositeOperation: 'source-over',
-              skewX: 0,
-              skewY: 0,
-              cropX: 0,
-              cropY: 0,
-              src: '', // Will be filled by processing
-              crossOrigin: 'anonymous',
-              filters: [],
-              id: 'image-1',
+          },
+          {
+            id: 'page-2',
+            width: 1080,
+            height: 1920,
+            zoom: 1,
+            objects: [
+              {
+                type: 'rect',
+                left: 0,
+                top: 0,
+                width: 1080,
+                height: 1920,
+                fill: '#f0f0f0',
+                id: 'workspace',
+                selectable: false,
+                hasControls: false,
+              },
+              {
+                type: 'textbox',
+                left: 100,
+                top: 300,
+                width: 300,
+                fontSize: 40,
+                text: 'Page 2 Content',
+                fill: '#ff0000',
+                id: 'text-p2',
+              },
+            ],
+            workSpace: {
+              width: 1080,
+              height: 1920,
+              fill: '#f0f0f0',
+              fillType: 0,
             },
-            {
-              type: 'textbox',
-              version: '5.3.0',
-              originX: 'left',
-              originY: 'top',
-              left: 100,
-              top: 500,
-              width: 300,
-              height: 50,
-              fill: '#000000',
-              text: 'Generated Text',
-              fontSize: 40,
-              fontFamily: 'Arial',
-              id: 'text-1',
-            },
-          ],
-          background: '#ffffff',
-        },
+          },
+        ],
       }
     },
   }
 
   const fetchDetail = async (code: string) => {
     if (MOCK_MODE) return mockApi.getDetail(code)
-    const res = await axios.get(`/api/detail?code=${code}`)
+    const res = await axios.get(`/api/project/detail?code=${code}`)
     return res.data.data
   }
 
-  const checkTaskStatus = async (taskId: string) => {
-    if (MOCK_MODE) return mockApi.checkStatus(taskId)
-    const res = await axios.get(`/api/task/status?taskId=${taskId}`)
-    return res.data.data
-  }
-
-  const processCanvasJson = async (json: any, sourceImageUrl: string) => {
-    // Load source image first
-    const sourceImage = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const img = new Image()
-      img.crossOrigin = 'Anonymous'
-      img.onload = () => resolve(img)
-      img.onerror = reject
-      img.src = sourceImageUrl
-    })
+  const processCanvasJson = async (json: any) => {
+    // If there are images that need cropping from a source image, handle it here.
+    // For now, we assume the objects are already in a renderable state or don't need complex processing
+    // unless the API returns a specific structure requiring it (like the previous single-task flow).
+    // Preserving the structure for future image processing if needed.
 
     const processedObjects = await Promise.all(
       json.objects.map(async (obj: any) => {
-        if (obj.type === 'image') {
-          // Create a temporary canvas to crop the image
-          const canvas = document.createElement('canvas')
-          canvas.width = obj.width
-          canvas.height = obj.height
-          const ctx = canvas.getContext('2d')
-
-          if (ctx) {
-            // Assuming obj.left/top/width/height in the JSON corresponds to the coordinates in the source image
-            // If the JSON coordinates are canvas coordinates, we need the source coordinates separately.
-            // For this implementation, I'm assuming the JSON object properties (left, top, width, height)
-            // ARE the crop coordinates from the source image, AND also the position on the destination canvas.
-            // If they are different, the JSON needs to provide sourceCrop coordinates.
-
-            // Let's assume for now we crop from the source image at (obj.left, obj.top) with size (obj.width, obj.height)
-            // And place it at (obj.left, obj.top) on the canvas.
-
-            ctx.drawImage(
-              sourceImage,
-              obj.left,
-              obj.top,
-              obj.width,
-              obj.height, // Source crop
-              0,
-              0,
-              obj.width,
-              obj.height, // Destination on temp canvas
-            )
-
-            const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve))
-            if (blob) {
-              const url = URL.createObjectURL(blob)
-              return { ...obj, src: url }
-            }
-          }
+        if (obj.type === 'image' && obj.src) {
+          // Ensure crossOrigin is set for images
+          return { ...obj, crossOrigin: 'anonymous' }
         }
         return obj
       }),
@@ -182,59 +132,48 @@ export function useTaskInit() {
 
     loading.value = true
     try {
-      // 1. Get Detail
-      const { taskId, sourceImageUrl } = await fetchDetail(code)
+      // 1. Get Project Detail
+      const projectData = await fetchDetail(code)
 
-      // 2. Poll Status
-      let resultJson = null
-      while (!resultJson) {
-        const res = await checkTaskStatus(taskId)
-        if (res.status === 'SUCCESS') {
-          resultJson = res.data
-        } else if (res.status === 'FAILED') {
-          throw new Error('Task failed')
-        } else {
-          await new Promise((resolve) => setTimeout(resolve, 5000)) // 5s polling
-        }
+      if (!projectData || !projectData.templates || projectData.templates.length === 0) {
+        throw new Error('No templates found in project')
       }
 
-      // 3. Process JSON (Crop images)
-      const finalJson = await processCanvasJson(resultJson, sourceImageUrl)
+      // 2. Process all templates
+      const processedTemplates = []
+      for (const tpl of projectData.templates) {
+        const processed = await processCanvasJson(tpl)
+        processedTemplates.push({
+          ...processed,
+          // Ensure essential fields exist
+          id: tpl.id || `page-${Date.now()}-${Math.random()}`,
+          width: tpl.width || 1080,
+          height: tpl.height || 1920,
+          workSpace: tpl.workSpace || {
+            width: tpl.width || 1080,
+            height: tpl.height || 1920,
+            fill: tpl.backgroundColor || '#ffffff',
+            fillType: 0,
+          },
+        })
+      }
 
-      // 4. Render to Canvas
-      // Clear existing template/canvas
+      // 3. Update Template Store
       templateStore.templateList = []
+      // Add all templates
+      templateStore.templateList.push(...processedTemplates)
 
-      // Create a new template from the JSON
-      const newTemplate = {
-        id: taskId,
-        width: 1080, // Should come from JSON
-        height: 1080, // Should come from JSON
-        zoom: 1,
-        objects: finalJson.objects,
-        backgroundColor: finalJson.background || '#ffffff',
-        workSpace: {
-          width: 1080,
-          height: 1080,
-          fill: '#ffffff',
-          fillType: 0,
-        },
-      }
-
-      templateStore.templateList.push(newTemplate)
+      // Set current index to 0
       templateStore.curTempIdx = 0
 
-      // We need to wait for the editor to be ready if it isn't already,
-      // but this init is called in onMounted, so it should be fine to set data.
-      // However, templateStore.renderTemplate() relies on editorStore.canvas
-
+      // 4. Render the first template
       await templateStore.renderTemplate()
 
-      ElMessage.success('Task loaded successfully')
+      ElMessage.success('Project loaded successfully')
       return true
     } catch (error) {
-      console.error('Task init failed:', error)
-      ElMessage.error('Failed to load task data')
+      console.error('Project init failed:', error)
+      ElMessage.error('Failed to load project data')
       return false
     } finally {
       loading.value = false
