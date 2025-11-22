@@ -7,6 +7,8 @@ import { panels } from '@/enums/editor'
 import TextPanel from './TextPanel/index.vue'
 import ShapePanel from './ShapePanel/index.vue'
 import MaterialPanel from './MaterialPanel/index.vue'
+import eventBus from '@/utils/eventBus'
+import { ref } from 'vue'
 
 const editorStore = useEditorStore()
 const { showPanel, panelType } = storeToRefs(editorStore)
@@ -25,6 +27,22 @@ const panelTitle = computed(() => {
 })
 const closePanel = () => {
   editorStore.setShowPanel(false)
+}
+
+const uploadLoading = ref(false)
+
+const customUpload = () => {
+  // const { file } = options
+  uploadLoading.value = true
+
+  // Simulate upload delay
+  setTimeout(() => {
+    uploadLoading.value = false
+    // Switch to material panel
+    editorStore.setPanelType(panels.material)
+    // Emit refresh event
+    eventBus.emit('refreshMaterialList')
+  }, 1500)
 }
 </script>
 
@@ -45,8 +63,9 @@ const closePanel = () => {
             :show-file-list="false"
             accept="image/*"
             multiple
+            :disabled="uploadLoading"
           >
-            <el-button size="small">点击上传</el-button>
+            <el-button size="small" :loading="uploadLoading">点击上传</el-button>
           </el-upload>
           <el-button text :icon="X" @click="closePanel" />
         </div>

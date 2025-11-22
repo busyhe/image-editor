@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, inject, onMounted, watch } from 'vue'
+import { ref, inject, onMounted, watch, onUnmounted } from 'vue'
 import { Search } from 'lucide-vue-next'
 import { fabric } from 'fabric'
 import { v4 as uuid } from 'uuid'
+import eventBus from '@/utils/eventBus'
 
 const activeIndex = ref('deliver')
 const canvasEditor = inject('canvasEditor') as any
@@ -89,7 +90,20 @@ const addToCanvas = (item: any) => {
 
 onMounted(() => {
   loadData()
+  eventBus.on('refreshMaterialList', handleRefresh)
 })
+
+onUnmounted(() => {
+  eventBus.off('refreshMaterialList', handleRefresh)
+})
+
+const handleRefresh = () => {
+  activeIndex.value = 'deliver'
+  list.value = []
+  page.value = 1
+  noMore.value = false
+  loadData()
+}
 
 watch(activeIndex, () => {
   // handleSelect handles the logic, but if activeIndex changes externally
