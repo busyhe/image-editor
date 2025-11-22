@@ -2,10 +2,13 @@
 import { Download } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
 import { useEditorStore } from '@/stores/modules/editor'
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
+import { saveCanvasApi } from '@/api/mock'
+import { useTemplateStore } from '@/stores/modules/template'
 
 const editorStore = useEditorStore()
+const templateStore = useTemplateStore()
 
 const cbMap = {
   saveImg() {
@@ -93,10 +96,38 @@ const confirmSave = async () => {
     }
   })
 }
+
+const handleManualSave = async () => {
+  const projectCode = new URLSearchParams(window.location.search).get('code')
+  if (!projectCode) {
+    // Fallback to save project dialog if no code
+    handleSaveProject()
+    return
+  }
+
+  const currentTemplate = templateStore.curTemplate
+  if (!currentTemplate) return
+
+  editorStore.setIsSaving(true)
+  try {
+    await saveCanvasApi(projectCode, currentTemplate.id, currentTemplate)
+    ElMessage.success('保存成功')
+  } catch (error) {
+    console.error(error)
+    ElMessage.error('保存失败')
+  } finally {
+    editorStore.setIsSaving(false)
+  }
+}
+
+const isSaving = computed(() => editorStore.isSaving)
 </script>
 
 <template>
   <div>
+    <el-button type="primary" class="mr-2" :loading="isSaving" @click="handleManualSave">
+      {{ isSaving ? '保存中' : '保 存' }}
+    </el-button>
     <el-dropdown placement="bottom-end" @command="saveWith">
       <el-button type="primary">
         <Download :size="16" />

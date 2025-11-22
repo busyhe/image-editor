@@ -31,10 +31,12 @@ import Editor, {
 import { useEditorStore } from '@/stores/modules/editor'
 import { useTemplateStore } from '@/stores/modules/template'
 import { useTaskInit } from '@/hooks/useTaskInit'
+import { useAutoSave } from '@/hooks/useAutoSave'
 
 const editorStore = useEditorStore()
 const templateStore = useTemplateStore()
 const canvasEditor = new Editor()
+const { debouncedSave } = useAutoSave()
 
 onMounted(async () => {
   // 初始化fabric
@@ -132,6 +134,7 @@ onMounted(async () => {
 
   canvas.on('object:modified', () => {
     throttledUpdateThumbnail()
+    debouncedSave()
   })
 
   canvas.on('object:removed', (e) => {

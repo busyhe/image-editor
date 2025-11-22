@@ -21,6 +21,7 @@ interface IState {
   showPanel: boolean
   panelPosition: 'left' | 'bottom'
   isLayering: boolean
+  isSaving: boolean
 }
 
 export const useEditorStore = defineStore({
@@ -35,6 +36,7 @@ export const useEditorStore = defineStore({
     showPanel: false, // 显示面板侧边栏
     panelPosition: 'left', // 面板侧栏位置
     isLayering: false,
+    isSaving: false,
   }),
   actions: {
     setEditor(editor: any) {
@@ -63,6 +65,9 @@ export const useEditorStore = defineStore({
     },
     setLayering(val: boolean) {
       this.isLayering = val
+    },
+    setIsSaving(val: boolean) {
+      this.isSaving = val
     },
   },
 })

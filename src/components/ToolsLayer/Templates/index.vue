@@ -8,6 +8,8 @@ import { Plus, Copy, Trash2, ChevronUp, ChevronDown } from 'lucide-vue-next'
 import { ElMessageBox } from 'element-plus'
 import { v4 as uuidv4 } from 'uuid'
 import type { Template } from '@/types/template'
+import { addCanvasApi, deleteCanvasApi } from '@/api/mock'
+import { ElMessage } from 'element-plus'
 
 const templateStore = useTemplateStore()
 const { templateList, curTempIdx } = storeToRefs(templateStore)
@@ -71,8 +73,20 @@ const handleAddTemplate = async () => {
     },
   }
 
-  await templateStore.addTemplate(newTemplate)
-  !templatesExpanded.value && (templatesExpanded.value = true)
+  const projectCode = new URLSearchParams(window.location.search).get('code')
+  if (projectCode) {
+    try {
+      await addCanvasApi(projectCode)
+      await templateStore.addTemplate(newTemplate)
+      !templatesExpanded.value && (templatesExpanded.value = true)
+    } catch (error) {
+      console.error(error)
+      ElMessage.error('新增画布失败')
+    }
+  } else {
+    await templateStore.addTemplate(newTemplate)
+    !templatesExpanded.value && (templatesExpanded.value = true)
+  }
 }
 
 // 复制页面
@@ -98,7 +112,18 @@ const handleDeleteTemplate = async () => {
     cancelButtonText: '取消',
     type: 'warning',
   }).then(async () => {
-    await templateStore.deleteTemplate()
+    const projectCode = new URLSearchParams(window.location.search).get('code')
+    if (projectCode) {
+      try {
+        await deleteCanvasApi(projectCode)
+        await templateStore.deleteTemplate()
+      } catch (error) {
+        console.error(error)
+        ElMessage.error('删除画布失败')
+      }
+    } else {
+      await templateStore.deleteTemplate()
+    }
   })
 }
 
