@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { useTemplateStore } from '@/stores/modules/template'
 import { ElMessage } from 'element-plus'
@@ -10,9 +11,10 @@ export function useTaskInit() {
   const loading = ref(false)
   const templateStore = useTemplateStore()
 
+  const route = useRoute()
+
   const getCodeFromUrl = () => {
-    const params = new URLSearchParams(window.location.search)
-    return params.get('code')
+    return route.query.code as string
   }
 
   // Mock API calls
