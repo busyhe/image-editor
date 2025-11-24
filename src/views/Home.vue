@@ -129,6 +129,7 @@ onMounted(async () => {
     // 排除 workspace 对象
     if (e.target && e.target.id !== 'workspace') {
       throttledUpdateThumbnail()
+      debouncedSave()
     }
   })
 
@@ -141,6 +142,7 @@ onMounted(async () => {
     // 排除 workspace 对象
     if (e.target && e.target.id !== 'workspace') {
       throttledUpdateThumbnail()
+      debouncedSave()
     }
   })
 
@@ -157,6 +159,7 @@ onMounted(async () => {
         })
         // 立即同步并更新缩略图
         templateStore.syncCanvasToTemplate()
+        debouncedSave()
       }
     }
   }

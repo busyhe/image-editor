@@ -268,6 +268,22 @@ const handleLayering = async () => {
             height: obj.height,
             id: obj.id,
           })
+
+          // Get background color from top-left pixel
+          const pixelData = ctx.getImageData(0, 0, 1, 1).data
+          // Check if not transparent
+          if (pixelData[3] > 0) {
+            const color = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`
+            const filter = new (fabric.Image.filters as any).RemoveColor({
+              color: color,
+              distance: 0.1, // Tolerance
+            })
+            if (!(fabricObj as fabric.Image).filters) {
+              ;(fabricObj as fabric.Image).filters = []
+            }
+            ;(fabricObj as fabric.Image).filters!.push(filter)
+            ;(fabricObj as fabric.Image).applyFilters()
+          }
         }
       } else if (obj.type === 'rect') {
         fabricObj = new fabric.Rect({
