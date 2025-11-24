@@ -70,10 +70,24 @@ const confirmSave = async () => {
       saveLoading.value = true
       try {
         // Get canvas image
+        // Get workspace object
+        const workspace = editorStore.canvas?.getObjects().find((item) => item.id === 'workspace')
+        const { left, top, width, height } = (workspace as any) || {
+          left: 0,
+          top: 0,
+          width: 0,
+          height: 0,
+        }
+
+        // Get canvas image
         const dataURL = editorStore.canvas?.toDataURL({
           format: 'png',
           quality: 1,
           multiplier: 1,
+          left,
+          top,
+          width,
+          height,
         })
 
         // Mock API call
