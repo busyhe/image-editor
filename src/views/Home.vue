@@ -126,8 +126,8 @@ onMounted(async () => {
 
   // 监听画布变化，自动同步到模板并更新缩略图
   canvas.on('object:added', (e) => {
-    // 排除 workspace 对象
-    if (e.target && e.target.id !== 'workspace') {
+    // 排除 workspace 对象 和 loading-mask
+    if (e.target && e.target.id !== 'workspace' && e.target.id !== 'loading-mask') {
       throttledUpdateThumbnail()
       debouncedSave()
     }
@@ -139,8 +139,8 @@ onMounted(async () => {
   })
 
   canvas.on('object:removed', (e) => {
-    // 排除 workspace 对象
-    if (e.target && e.target.id !== 'workspace') {
+    // 排除 workspace 对象 和 loading-mask
+    if (e.target && e.target.id !== 'workspace' && e.target.id !== 'loading-mask') {
       throttledUpdateThumbnail()
       debouncedSave()
     }

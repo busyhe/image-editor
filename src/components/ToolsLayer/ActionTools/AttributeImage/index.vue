@@ -179,6 +179,7 @@ const handleLayering = async () => {
     selectable: false,
     evented: false,
     excludeFromExport: true,
+    id: 'loading-mask',
   })
 
   const center = activeObject.getCenterPoint()
@@ -192,6 +193,7 @@ const handleLayering = async () => {
     selectable: false,
     evented: false,
     excludeFromExport: true,
+    id: 'loading-mask',
   })
 
   // Group needs correct positioning if created from objects
