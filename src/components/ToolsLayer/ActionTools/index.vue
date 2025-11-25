@@ -189,10 +189,15 @@ function setColor(_color: string) {
   templateStore.updateThumbnail()
 }
 
+import { useAutoSave } from '@/hooks/useAutoSave'
+
+const { debouncedSave } = useAutoSave()
+
 const handleSetSize = (command: number) => {
   const item = sizeList.value.find((item) => item.id === command)
   if (item) {
     editorStore.editor?.setSize(item.width, item.height)
+    debouncedSave()
   }
 }
 
