@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  fabric@5.3.0:
+    hash: 13d83d643aeef2caceccdf07f0fec64506cd941094f892b99796cc8997681758
+    path: patches/fabric@5.3.0.patch
+
 importers:
 
   .:
@@ -28,7 +33,7 @@ importers:
         version: 3.3.0
       fabric:
         specifier: 5.3.0
-        version: 5.3.0
+        version: 5.3.0(patch_hash=13d83d643aeef2caceccdf07f0fec64506cd941094f892b99796cc8997681758)
       fontfaceobserver:
         specifier: ^2.3.0
         version: 2.3.0
@@ -5496,7 +5501,7 @@ snapshots:
 
   exsolve@1.0.7: {}
 
-  fabric@5.3.0:
+  fabric@5.3.0(patch_hash=13d83d643aeef2caceccdf07f0fec64506cd941094f892b99796cc8997681758):
     optionalDependencies:
       canvas: 2.11.2
       jsdom: 19.0.0(canvas@2.11.2)
