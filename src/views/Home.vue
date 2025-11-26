@@ -78,7 +78,8 @@ onMounted(async () => {
 
   // 尝试从 URL code 初始化
   const { init: initTask } = useTaskInit()
-  const isTaskInit = await initTask()
+  // const isTaskInit = await initTask()
+  const isTaskInit = false
 
   // 初始化默认模板（如果没有模板且不是任务初始化）
   if (!isTaskInit && templateStore.templateList.length === 0) {
