@@ -9,6 +9,7 @@ import ShapePanel from './ShapePanel/index.vue'
 import MaterialPanel from './MaterialPanel/index.vue'
 import eventBus from '@/utils/eventBus'
 import { ref } from 'vue'
+import { ElMessage, type UploadProps } from 'element-plus'
 
 const editorStore = useEditorStore()
 const { showPanel, panelType } = storeToRefs(editorStore)
@@ -44,6 +45,21 @@ const customUpload = () => {
     eventBus.emit('refreshMaterialList')
   }, 1500)
 }
+
+const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  const isImage = ['image/jpeg', 'image/png', 'image/jpg'].includes(rawFile.type)
+  const isLt5M = rawFile.size / 1024 / 1024 < 5
+
+  if (!isImage) {
+    ElMessage.error('上传文件只能是 JPG/PNG/JPEG 格式!')
+    return false
+  }
+  if (!isLt5M) {
+    ElMessage.error('上传文件大小不能超过 5MB!')
+    return false
+  }
+  return true
+}
 </script>
 
 <template>
@@ -61,8 +77,8 @@ const customUpload = () => {
             class="inline-block mr-2"
             :http-request="customUpload"
             :show-file-list="false"
-            accept="image/*"
-            multiple
+            :before-upload="beforeUpload"
+            accept=".jpg,.jpeg,.png"
             :disabled="uploadLoading"
           >
             <el-button size="small" :loading="uploadLoading">点击上传</el-button>
