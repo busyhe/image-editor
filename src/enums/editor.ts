@@ -18,6 +18,7 @@ export enum panels {
   material = 'MATERIAL',
   shape = 'SHAPE',
   upload = 'UPLOAD',
+  svg = 'SVG',
 }
 
 export enum texts {

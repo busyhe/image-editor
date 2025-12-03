@@ -161,8 +161,40 @@ const handleAddShape = debounce(function (type: shapes) {
   }
 }, 250)
 
+const svgInputRef = ref<HTMLInputElement | null>(null)
+
+const handleUploadSVG = (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+
+  const url = URL.createObjectURL(file)
+  fabric.loadSVGFromURL(url, (objects, options) => {
+    const group = fabric.util.groupSVGElements(objects, options)
+    const canvas = editorStore.canvas
+    if (!canvas) return
+    group.set({
+      left: (canvas.width || 0) / 2,
+      top: (canvas.height || 0) / 2,
+      originX: 'center',
+      originY: 'center',
+    })
+    editorStore.editor.addBaseType(group, { center: true })
+    URL.revokeObjectURL(url)
+    // Clear input value to allow re-uploading the same file
+    if (svgInputRef.value) {
+      svgInputRef.value.value = ''
+    }
+  })
+}
+
 const handleAddType = (type: panels) => {
-  !unref(showPanel) && editorStore.setShowPanel(true)
+  if (type === panels.svg) {
+    svgInputRef.value?.click()
+    return
+  }
+  if (!unref(showPanel)) {
+    editorStore.setShowPanel(true)
+  }
   editorStore.setPanelType(type)
   // switch (type) {
   //   case 'text':
@@ -223,6 +255,7 @@ onDeactivated(() => {
 
 <template>
   <div class="flex justify-center items-center gap-2">
+    <input ref="svgInputRef" type="file" accept=".svg" class="hidden" @change="handleUploadSVG" />
     <el-dropdown placement="bottom-end" @command="handleAddType">
       <el-button title="新增">
         <el-icon><Plus /></el-icon>
@@ -236,9 +269,12 @@ onDeactivated(() => {
           <el-dropdown-item :command="panels.shape">
             <Shapes :size="16" class="mr-2" />形状
           </el-dropdown-item>
-          <el-dropdown-item :command="panels.material"
-            ><Image :size="16" class="mr-2" />上传</el-dropdown-item
-          >
+          <el-dropdown-item :command="panels.material">
+            <Image :size="16" class="mr-2" />上传
+          </el-dropdown-item>
+          <el-dropdown-item :command="panels.svg">
+            <Image :size="16" class="mr-2" />上传svg
+          </el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
