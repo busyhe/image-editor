@@ -1,4 +1,4 @@
-import { editorTabs, texts, shapes, codes, files, DrawTypes } from '@/enums/editor'
+import { texts, shapes, codes, files, DrawTypes } from '@/enums/editor'
 
 export const textList = [
   {
@@ -23,6 +23,11 @@ export const shapeList = [
     name: 'editor.shape.rect',
     icon: '<svg role="img" aria-label="shape-rectangle" focusable="false" data-icon="shape-rectangle" aria-hidden="true" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="gd_design_icon gd_design_icon-shape-rectangle"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.5 19V5C19.5 4.72386 19.2761 4.5 19 4.5L5 4.5C4.72386 4.5 4.5 4.72386 4.5 5L4.5 19C4.5 19.2761 4.72386 19.5 5 19.5H19C19.2761 19.5 19.5 19.2761 19.5 19ZM21 5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5Z" fill="currentColor"></path></svg>',
     type: shapes.react,
+  },
+  {
+    name: 'editor.shape.roundRect',
+    icon: '<svg role="img" aria-label="shape-round-rectangle" focusable="false" data-icon="shape-round-rectangle" aria-hidden="true" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="gd_design_icon gd_design_icon-shape-round-rectangle"><rect x="4.5" y="4.5" width="15" height="15" rx="4" ry="4" stroke="currentColor" stroke-width="1.5" fill="none"></rect></svg>',
+    type: shapes.roundRect,
   },
   {
     name: 'editor.shape.triangle',

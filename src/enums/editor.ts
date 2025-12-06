@@ -19,6 +19,7 @@ export enum panels {
   shape = 'SHAPE',
   upload = 'UPLOAD',
   svg = 'SVG',
+  template = 'TEMPLATE',
 }
 
 export enum texts {
@@ -33,6 +34,7 @@ export enum shapes {
   around = 'Around',
   polygon = 'Polygon',
   line = 'LINE',
+  roundRect = 'RoundRect',
 }
 
 export enum codes {

@@ -147,6 +147,18 @@ onMounted(async () => {
     }
   })
 
+  canvas.on('selection:created', (e) => {
+    if (e.selected && e.selected.length > 0) {
+      console.log('selected json', e.selected[0].toJSON())
+    }
+  })
+
+  canvas.on('selection:updated', (e) => {
+    if (e.selected && e.selected.length > 0) {
+      console.log('selected json', e.selected[0].toJSON())
+    }
+  })
+
   // 监听画布大小变化事件（由 WorkspacePlugin 触发）
   const handleSizeChange = (width: number, height: number) => {
     // 更新当前模板的尺寸

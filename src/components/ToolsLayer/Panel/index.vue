@@ -7,6 +7,7 @@ import { panels } from '@/enums/editor'
 import TextPanel from './TextPanel/index.vue'
 import ShapePanel from './ShapePanel/index.vue'
 import MaterialPanel from './MaterialPanel/index.vue'
+import TemplatePanel from './TemplatePanel/index.vue'
 import eventBus from '@/utils/eventBus'
 import { ref } from 'vue'
 import { ElMessage, type UploadProps } from 'element-plus'
@@ -22,6 +23,8 @@ const panelTitle = computed(() => {
       return '形状'
     case panels.material:
       return '素材'
+    case panels.template:
+      return '模板'
     default:
       return ''
   }
@@ -90,6 +93,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
         <TextPanel v-if="panelType === panels.text" />
         <ShapePanel v-if="panelType === panels.shape" />
         <MaterialPanel v-if="panelType === panels.material" />
+        <TemplatePanel v-if="panelType === panels.template" />
       </div>
     </div>
   </div>

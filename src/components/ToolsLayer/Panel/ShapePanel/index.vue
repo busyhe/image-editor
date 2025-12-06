@@ -20,6 +20,19 @@ const handleAddShape = debounce(function (type: shapes) {
       })
       editorStore.editor.addBaseType(rect, { center: true })
       break
+    case shapes.roundRect:
+      const roundRect = new fabric.Rect({
+        ...defaultPosition,
+        fill: '#F57274FF',
+        width: 400,
+        height: 400,
+        rx: 50,
+        ry: 50,
+        roundValue: 200,
+        name: '圆角矩形',
+      } as any)
+      editorStore.editor.addBaseType(roundRect, { center: true })
+      break
     case shapes.triangle:
       const triangle = new fabric.Triangle({
         ...defaultPosition,

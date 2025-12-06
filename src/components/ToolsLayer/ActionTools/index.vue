@@ -11,6 +11,7 @@ import {
   RectangleVertical,
   RectangleHorizontal,
   Square,
+  LayoutTemplate,
 } from 'lucide-vue-next'
 import { fabric } from 'fabric'
 import { useEditorStore } from '@/stores/modules/editor'
@@ -169,16 +170,38 @@ const handleUploadSVG = (e: Event) => {
 
   const url = URL.createObjectURL(file)
   fabric.loadSVGFromURL(url, (objects, options) => {
-    const group = fabric.util.groupSVGElements(objects, options)
     const canvas = editorStore.canvas
-    if (!canvas) return
-    group.set({
-      left: (canvas.width || 0) / 2,
-      top: (canvas.height || 0) / 2,
-      originX: 'center',
-      originY: 'center',
-    })
-    editorStore.editor.addBaseType(group, { center: true })
+    if (!canvas) {
+      URL.revokeObjectURL(url)
+      return
+    }
+
+    // Filter out null/undefined objects that Fabric.js couldn't parse
+    const validObjects = objects.filter((obj) => obj !== null && obj !== undefined)
+
+    if (validObjects.length === 0) {
+      console.warn('No valid objects found in SVG')
+      URL.revokeObjectURL(url)
+      if (svgInputRef.value) {
+        svgInputRef.value.value = ''
+      }
+      return
+    }
+
+    try {
+      const group = fabric.util.groupSVGElements(validObjects, options)
+      group.set({
+        left: (canvas.width || 0) / 2,
+        top: (canvas.height || 0) / 2,
+        originX: 'center',
+        originY: 'center',
+      })
+      editorStore.editor.addBaseType(group, { center: true })
+      console.log('canvas json', canvas.toJSON())
+    } catch (error) {
+      console.error('Error processing SVG:', error)
+    }
+
     URL.revokeObjectURL(url)
     // Clear input value to allow re-uploading the same file
     if (svgInputRef.value) {
@@ -274,6 +297,9 @@ onDeactivated(() => {
           </el-dropdown-item>
           <el-dropdown-item :command="panels.svg">
             <Image :size="16" class="mr-2" />上传svg
+          </el-dropdown-item>
+          <el-dropdown-item :command="panels.template">
+            <LayoutTemplate :size="16" class="mr-2" />模板
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>
