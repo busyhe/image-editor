@@ -27,6 +27,7 @@ import Editor, {
   LockPlugin,
   MaskPlugin,
   SimpleClipImagePlugin,
+  PathTextPlugin,
 } from '@/lib/core'
 import { useEditorStore } from '@/stores/modules/editor'
 import { useTemplateStore } from '@/stores/modules/template'
@@ -72,6 +73,7 @@ onMounted(async () => {
   canvasEditor.use(LockPlugin)
   canvasEditor.use(MaskPlugin)
   canvasEditor.use(SimpleClipImagePlugin)
+  canvasEditor.use(PathTextPlugin)
 
   editorStore.setEditor(canvasEditor)
   editorStore.setCanvas(canvas)

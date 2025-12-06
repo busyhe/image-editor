@@ -63,7 +63,7 @@ export { default as MaterialPlugin } from './plugin/MaterialPlugin'
 export { default as MoveHotKeyPlugin } from './plugin/MoveHotKeyPlugin'
 
 // 路径文本插件 - 路径文本对象
-// export { default as PathTextPlugin } from './plugin/PathTextPlugin'
+export { default as PathTextPlugin } from './plugin/PathTextPlugin'
 
 // 多边形修改插件 - 修改多边形对象
 export { default as PolygonModifyPlugin } from './plugin/PolygonModifyPlugin'

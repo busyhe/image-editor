@@ -20,6 +20,8 @@ export enum panels {
   upload = 'UPLOAD',
   svg = 'SVG',
   template = 'TEMPLATE',
+  pathText = 'PATHTEXT',
+  arcText = 'ARCTEXT',
 }
 
 export enum texts {

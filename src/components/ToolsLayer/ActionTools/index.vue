@@ -210,9 +210,33 @@ const handleUploadSVG = (e: Event) => {
   })
 }
 
+const handleAddArcText = () => {
+  const path = new fabric.Path('M 0 100 Q 200 -50 400 100', {
+    fill: '',
+    stroke: '',
+    visible: false,
+  })
+  const text = new fabric.IText('弧形文字', {
+    ...defaultPosition,
+    fontSize: 60,
+    path: path,
+    fill: '#000000',
+    name: '弧形文字',
+  } as any)
+  editorStore.editor.addBaseType(text, { center: true })
+}
+
 const handleAddType = (type: panels) => {
   if (type === panels.svg) {
     svgInputRef.value?.click()
+    return
+  }
+  if (type === panels.pathText) {
+    editorStore.editor.startTextPathDraw()
+    return
+  }
+  if (type === panels.arcText) {
+    handleAddArcText()
     return
   }
   if (!unref(showPanel)) {
@@ -288,6 +312,12 @@ onDeactivated(() => {
         <el-dropdown-menu>
           <el-dropdown-item :command="panels.text"
             ><Type :size="16" class="mr-2" />文字</el-dropdown-item
+          >
+          <el-dropdown-item :command="panels.arcText"
+            ><Type :size="16" class="mr-2" />弧形文字</el-dropdown-item
+          >
+          <el-dropdown-item :command="panels.pathText"
+            ><Type :size="16" class="mr-2" />绘制路径文字</el-dropdown-item
           >
           <el-dropdown-item :command="panels.shape">
             <Shapes :size="16" class="mr-2" />形状
