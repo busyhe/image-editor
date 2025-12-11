@@ -19,7 +19,10 @@ fabric.Rect = fabric.util.createClass(fabric.Rect, {
     this.rx = (1 / this.scaleX) * roundValue
     this.ry = (1 / this.scaleY) * roundValue
     this.callSuper('_render', ctx)
-  }
+  },
+  toObject: function (propertiesToInclude: any) {
+    return this.callSuper('toObject', ['roundValue'].concat(propertiesToInclude))
+  },
 })
 
 fabric.Rect.fromObject = function (object, callback) {

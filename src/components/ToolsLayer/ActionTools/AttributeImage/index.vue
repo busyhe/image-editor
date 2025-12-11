@@ -226,6 +226,9 @@ const handleLayering = async () => {
     }
 
     const result = await mockGetResult()
+    if (!result || !result.objects) {
+      throw new Error('Failed to get analysis result')
+    }
     const objects = result.objects
 
     const originalElement = activeObject.getElement() as HTMLImageElement
@@ -369,6 +372,7 @@ const handleLayering = async () => {
     }
   } catch (e) {
     console.error('Layering failed:', e)
+    ElMessage.error(e instanceof Error ? e.message : 'Layering failed')
     // Unlock if failed
     activeObject.set({
       lockMovementX: false,

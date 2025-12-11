@@ -28,7 +28,7 @@ const handleAddShape = debounce(function (type: shapes) {
         height: 400,
         rx: 50,
         ry: 50,
-        roundValue: 200,
+        roundValue: 50,
         name: '圆角矩形',
       } as any)
       editorStore.editor.addBaseType(roundRect, { center: true })
