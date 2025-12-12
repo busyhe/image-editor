@@ -214,6 +214,7 @@ class WorkspacePlugin implements IPluginTempl {
   setWorkspaseBg(color: string) {
     const workspase = this.getWorkspase()
     workspase?.set('fill', color)
+    this.canvas.requestRenderAll()
   }
 
   _bindWheel() {

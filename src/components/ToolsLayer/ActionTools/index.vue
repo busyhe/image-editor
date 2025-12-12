@@ -256,10 +256,7 @@ const handleAddType = (type: panels) => {
 function setColor(_color: string) {
   if (!_color) return
 
-  editorStore.canvas?.setBackgroundColor(
-    _color,
-    editorStore.canvas.renderAll.bind(editorStore.canvas),
-  )
+  editorStore.editor.setWorkspaseBg(_color)
 
   color.value = _color
 
