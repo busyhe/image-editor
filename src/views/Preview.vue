@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import FabricView from '@/components/FabricView/index.vue'
 import templateData from './template.json'
+import templateData2 from './template2.json'
 
 const jsonData = ref<any>(templateData)
 // Example URL, commented out for now as we use local data
@@ -20,6 +21,7 @@ const jsonData = ref<any>(templateData)
         :height="400"
         fit="contain"
         backgroundColor="#ffffff"
+        preview
       />
       <!-- <FabricView :url="jsonUrl" /> -->
     </div>
