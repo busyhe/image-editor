@@ -21,7 +21,7 @@ fabric.Rect = fabric.util.createClass(fabric.Rect, {
     this.callSuper('_render', ctx)
   },
   toObject: function (propertiesToInclude: any) {
-    return this.callSuper('toObject', ['roundValue'].concat(propertiesToInclude))
+    return this.callSuper('toObject', ['name', 'roundValue'].concat(propertiesToInclude))
   },
 })
 

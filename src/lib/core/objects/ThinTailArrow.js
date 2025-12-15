@@ -47,6 +47,9 @@ fabric.ThinTailArrow = fabric.util.createClass(fabric.Line, {
     ctx.fill();
     ctx.restore();
   },
+  toObject(propertiesToInclude) {
+    return this.callSuper('toObject', ['name'].concat(propertiesToInclude));
+  },
 });
 
 fabric.ThinTailArrow.fromObject = (options, callback) => {

@@ -41,9 +41,12 @@ fabric.Arrow = fabric.util.createClass(fabric.Line, {
     ctx.strokeStyle = this.stroke
     ctx.fillStyle = this.fill
     ctx.stroke()
-    ctx.fill()
-    ctx.restore()
-  }
+    ctx.fill();
+    ctx.restore();
+  },
+  toObject(propertiesToInclude) {
+    return this.callSuper('toObject', ['name'].concat(propertiesToInclude));
+  },
 })
 
 fabric.Arrow.fromObject = (options, callback) => {
