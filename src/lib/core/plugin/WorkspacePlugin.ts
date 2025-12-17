@@ -14,6 +14,8 @@ class WorkspacePlugin implements IPluginTempl {
     'setSize',
     'getWorkspase',
     'setWorkspaseBg',
+    'setWorkspaseBgGradient',
+    'setWorkspaseBgImage',
     'setCenterFromObject',
     'getScale',
     'getWorkspaceSize',
@@ -213,7 +215,61 @@ class WorkspacePlugin implements IPluginTempl {
 
   setWorkspaseBg(color: string) {
     const workspase = this.getWorkspase()
-    workspase?.set('fill', color)
+    if (workspase) {
+      workspase.set('fill', color)
+      this.canvas.requestRenderAll()
+    }
+  }
+
+  setWorkspaseBgGradient(gradient: fabric.Gradient) {
+    const workspase = this.getWorkspase()
+    if (workspase) {
+      workspase.set('fill', gradient)
+      this.canvas.requestRenderAll()
+    }
+  }
+
+  setWorkspaseBgImage(image: fabric.Image | string) {
+    const workspase = this.getWorkspase()
+    if (!workspase) return
+
+    if (typeof image === 'string') {
+      fabric.Image.fromURL(image, (img) => {
+        if (!img) return
+        this._setBgImage(img, workspase)
+      })
+    } else {
+      this._setBgImage(image, workspase)
+    }
+  }
+
+  _setBgImage(img: fabric.Image, workspase: fabric.Rect) {
+    const imgEl = img.getElement() as HTMLImageElement
+    if (!imgEl) return
+
+    const imgWidth = imgEl.naturalWidth || img.width || 0
+    const imgHeight = imgEl.naturalHeight || img.height || 0
+    const workWidth = workspase.width || 0
+    const workHeight = workspase.height || 0
+
+    if (!imgWidth || !imgHeight) return
+
+    const scaleX = workWidth / imgWidth
+    const scaleY = workHeight / imgHeight
+    const scale = Math.max(scaleX, scaleY)
+
+    const w = imgWidth * scale
+    const h = imgHeight * scale
+    const offsetX = (workWidth - w) / 2
+    const offsetY = (workHeight - h) / 2
+
+    const pattern = new fabric.Pattern({
+      source: imgEl,
+      repeat: 'no-repeat',
+      patternTransform: [scale, 0, 0, scale, offsetX, offsetY], // matrix for scaling and moving
+    })
+
+    workspase.set('fill', pattern)
     this.canvas.requestRenderAll()
   }
 

@@ -22,7 +22,6 @@ import AttributePosition from './AttributePosition/index.vue'
 import AttributeFont from './AttributeFont/index.vue'
 import AttributeShape from './AttributeShape/index.vue'
 import AttributeImage from './AttributeImage/index.vue'
-import ColorPicker from './ColorPicker/index.vue'
 
 import { useTemplateStore } from '@/stores/modules/template'
 import useSelect from '@/hooks/select'
@@ -253,15 +252,33 @@ const handleAddType = (type: panels) => {
   // }
 }
 
-function setColor(_color: string) {
-  if (!_color) return
+import BackgroundPicker from './BackgroundPicker/index.vue'
 
-  editorStore.editor.setWorkspaseBg(_color)
+// ... existing imports
 
-  color.value = _color
+// ...
 
-  // Update template store
-  templateStore.updateTemplate({ backgroundColor: _color })
+function handleBackgroundChange(data: { type: string; value: any }) {
+  const { type, value } = data
+  if (type === 'solid') {
+    editorStore.editor.setWorkspaseBg(value)
+    color.value = value
+    templateStore.updateTemplate({
+      backgroundColor: value,
+      workSpace: { fill: value, fillType: 0 },
+    } as any)
+  } else if (type === 'gradient') {
+    editorStore.editor.setWorkspaseBgGradient(value)
+    templateStore.updateTemplate({ workSpace: { fill: value, fillType: 1 } } as any)
+  } else if (type === 'image') {
+    editorStore.editor.setWorkspaseBgImage(value)
+    // 保存图片路径或对象？这里 value 是 blob url
+    // 实际保存时可能需要上传，这里暂存
+    templateStore.updateTemplate({
+      backgroundImage: value,
+      workSpace: { fill: value, fillType: 2 },
+    } as any)
+  }
   templateStore.updateThumbnail()
 }
 
@@ -340,7 +357,7 @@ onDeactivated(() => {
           </el-button>
         </template>
 
-        <ColorPicker :model-value="color" @change="setColor" />
+        <BackgroundPicker :color="color" @change="handleBackgroundChange" />
       </el-popover>
 
       <el-dropdown placement="bottom-start" @command="handleSetSize">

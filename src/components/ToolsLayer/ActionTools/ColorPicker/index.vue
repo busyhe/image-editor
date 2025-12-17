@@ -84,7 +84,7 @@ const handleCustomColorChange = (val: string) => {
   <div class="color-picker w-64 p-2">
     <!-- File Colors -->
     <div class="mb-4">
-      <div class="text-xs text-gray-500 mb-2">文件颜色</div>
+      <div class="text-xs text-gray-500 mb-2">背景颜色</div>
       <div class="flex flex-wrap gap-2">
         <!-- Transparent -->
         <div
