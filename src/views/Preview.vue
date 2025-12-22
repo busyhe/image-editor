@@ -17,6 +17,16 @@ const currentIndex = ref(0)
 const previewCanvasRef = ref<HTMLCanvasElement | null>(null)
 const previewContainerRef = ref<HTMLElement | null>(null)
 let previewCanvas: fabric.StaticCanvas | null = null
+const fontList = ref([
+  {
+    fontFamily: '站酷快乐体',
+    url: 'https://api.kuaitu.cc/uploads/_c638250a7d.woff2',
+  },
+  {
+    fontFamily: '优设标题黑',
+    url: 'https://api.kuaitu.cc/uploads/_39c33c33e3.woff2',
+  },
+])
 
 const openPreview = (index: number) => {
   currentIndex.value = index
@@ -207,6 +217,7 @@ onUnmounted(() => {
           fit="contain"
           backgroundColor="#ffffff"
           preview
+          :fontList="fontList"
           @preview-click="openPreview(index)"
         />
       </div>

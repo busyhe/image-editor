@@ -4,8 +4,14 @@ import { ref, onMounted, watch, onUnmounted } from 'vue'
 import { fabric } from 'fabric'
 import axios from 'axios'
 import { useResizeObserver } from '@vueuse/core'
+import FontFaceObserver from 'fontfaceobserver'
 
 type FitMode = 'contain' | 'cover' | 'fill' | 'none'
+
+interface FontItem {
+  fontFamily: string
+  url: string
+}
 
 const props = withDefaults(
   defineProps<{
@@ -16,11 +22,13 @@ const props = withDefaults(
     fit?: FitMode
     backgroundColor?: string
     preview?: boolean
+    fontList?: FontItem[]
   }>(),
   {
     fit: 'contain',
     backgroundColor: '#f3f4f6',
     preview: false,
+    fontList: () => [],
   },
 )
 
@@ -48,6 +56,52 @@ const initCanvas = () => {
   }
 }
 
+// Extract font families from JSON
+const getUsedFonts = (json: any): string[] => {
+  const fonts = new Set<string>()
+  const walk = (o: any) => {
+    if (o.fontFamily) fonts.add(o.fontFamily)
+    if (o.objects && Array.isArray(o.objects)) {
+      o.objects.forEach(walk)
+    }
+  }
+  walk(json)
+  return Array.from(fonts)
+}
+
+// Load fonts before rendering
+const loadFonts = async (json: any) => {
+  if (!props.fontList?.length) return
+
+  const usedFonts = getUsedFonts(json)
+  const fontsToLoad = props.fontList.filter((f) => usedFonts.includes(f.fontFamily))
+
+  if (fontsToLoad.length === 0) return
+
+  // Inject @font-face and create observers
+  const observers = fontsToLoad.map((font) => {
+    const id = `font-${font.fontFamily}`
+    if (!document.getElementById(id)) {
+      const style = document.createElement('style')
+      style.id = id
+      style.textContent = `
+        @font-face {
+          font-family: "${font.fontFamily}";
+          src: url("${font.url}");
+        }
+      `
+      document.head.appendChild(style)
+    }
+    return new FontFaceObserver(font.fontFamily).load(null, 10000)
+  })
+
+  try {
+    await Promise.all(observers)
+  } catch (e) {
+    console.warn('FabricView: some fonts failed to load', e)
+  }
+}
+
 const loadData = async () => {
   if (!canvas) initCanvas()
   if (!canvas) return
@@ -63,6 +117,7 @@ const loadData = async () => {
     }
 
     if (renderData) {
+      await loadFonts(renderData)
       await new Promise<void>((resolve) => {
         canvas?.loadFromJSON(renderData, () => {
           resolve()
