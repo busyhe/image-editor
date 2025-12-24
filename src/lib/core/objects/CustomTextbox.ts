@@ -8,20 +8,19 @@ fabric.Textbox = fabric.util.createClass(fabric.Textbox, {
 
   _renderChars: function (method: any, ctx: any, line: any, left: any, top: any, lineIndex: any) {
     // set proper line offset
-    let lineHeight = this.getHeightOfLine(lineIndex),
-      isJustify = this.textAlign.indexOf('justify') !== -1,
-      actualStyle,
-      nextStyle,
-      charsToRender = '',
-      charBox,
-      boxWidth = 0,
-      timeToRender,
-      path = this.path,
+    const lineHeight = this.getHeightOfLine(lineIndex),
+      isJustify = this.textAlign.indexOf('justify') !== -1
+    let actualStyle, nextStyle
+    let charsToRender = ''
+    let charBox
+    let boxWidth = 0
+    let timeToRender
+    const path = this.path,
       shortCut = !isJustify && this.charSpacing === 0 && this.isEmptyStyles(lineIndex) && !path,
       isLtr = this.direction === 'ltr',
-      sign = this.direction === 'ltr' ? 1 : -1,
-      drawingLeft,
-      currentDirection = ctx.canvas.getAttribute('dir')
+      sign = this.direction === 'ltr' ? 1 : -1
+    let drawingLeft
+    const currentDirection = ctx.canvas.getAttribute('dir')
     ctx.save()
     if (currentDirection !== this.direction) {
       ctx.canvas.setAttribute('dir', isLtr ? 'ltr' : 'rtl')
@@ -55,6 +54,7 @@ fabric.Textbox = fabric.util.createClass(fabric.Textbox, {
         // if we have charSpacing, we render char by char
         actualStyle = actualStyle || this.getCompleteStyleDeclaration(lineIndex, i)
         nextStyle = this.getCompleteStyleDeclaration(lineIndex, i + 1)
+        // @ts-expect-error
         timeToRender = fabric.util.hasStyleChanged(actualStyle, nextStyle, false)
       }
       // if (timeToRender) {
@@ -118,4 +118,4 @@ fabric.Textbox.fromObject = function (options, callback: any) {
   return callback(new fabric.Textbox(text, options))
 }
 
-export default fabric.Rect
+export default fabric.Textbox

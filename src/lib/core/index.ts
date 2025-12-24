@@ -95,9 +95,14 @@ export { default as WorkspacePlugin } from './plugin/WorkspacePlugin'
 
 import EventType from './eventType'
 import Utils from './utils/utils'
+import './objects/BaseObject'
 import CustomRect from './objects/CustomRect'
 import CustomTextbox from './objects/CustomTextbox'
-export { EventType, Utils, CustomRect, CustomTextbox }
+// @ts-expect-error
+import Arrow from './objects/Arrow'
+// @ts-expect-error
+import ThinTailArrow from './objects/ThinTailArrow'
+export { EventType, Utils, CustomRect, CustomTextbox, Arrow, ThinTailArrow }
 export default Editor
 
 export * from '@/interface/Editor'
